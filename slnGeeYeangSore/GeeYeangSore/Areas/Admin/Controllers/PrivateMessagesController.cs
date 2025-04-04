@@ -1,0 +1,72 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using GeeYeangSore.Models;
+using GeeYeangSore.Controllers;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+
+namespace GeeYeangSore.Areas.Admin.Controllers
+{
+    /// <summary>
+    /// 私人訊息管理控制器
+    /// </summary>
+    public class PrivateMessagesController : SuperController
+    {
+        // 注入資料庫上下文
+        private readonly GeeYeangSoreContext _context;
+        // 設定每頁顯示10筆資料
+        private const int PageSize = 10;
+
+        // 建構函數，通過依賴注入獲取資料庫上下文
+        public PrivateMessagesController(GeeYeangSoreContext context)
+        {
+            _context = context;
+        }
+
+        /// <summary>
+        /// 顯示私人訊息列表
+        /// </summary>
+        /// <param name="searchString">搜尋關鍵字</param>
+        /// <param name="page">當前頁碼，預設為第1頁</param>
+        [Area("Admin")]
+        public async Task<IActionResult> Index(string searchString, int page = 1)
+        {
+            // 檢查管理者權限
+            if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
+                return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
+
+            // 建立基礎查詢
+            var query = _context.HMessages.AsQueryable();
+
+            // 如果有搜尋關鍵字，則進行篩選（移除前後空白）
+            if (!string.IsNullOrEmpty(searchString?.Trim()))
+            {
+                var trimmedSearch = searchString.Trim();
+                query = query.Where(m =>
+                    m.HContent.Contains(trimmedSearch) ||      // 搜尋訊息內容
+                    m.HSenderRole.Contains(trimmedSearch) ||   // 搜尋發送者角色
+                    m.HReceiverRole.Contains(trimmedSearch)    // 搜尋接收者角色
+                );
+            }
+
+            // 計算總筆數和總頁數
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)PageSize);
+
+            // 取得分頁後的資料
+            var messages = await query
+                .OrderByDescending(m => m.HTimestamp)  // 依時間降序排序
+                .Skip((page - 1) * PageSize)          // 跳過前面頁數的資料
+                .Take(PageSize)                       // 取得當前頁的資料
+                .ToListAsync();
+
+            // 設定ViewBag資料供視圖使用
+            ViewBag.CurrentPage = page;               // 當前頁碼
+            ViewBag.TotalPages = totalPages;          // 總頁數
+            ViewBag.SearchString = searchString;      // 搜尋關鍵字
+
+            // 返回視圖，並傳入訊息列表
+            return View(messages);
+        }
+    }
+}
