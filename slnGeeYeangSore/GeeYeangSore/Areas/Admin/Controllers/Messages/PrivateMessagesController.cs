@@ -11,7 +11,6 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
     /// 私人訊息管理控制器
     /// </summary>
     [Area("Admin")]
-    [Route("[area]/[controller]/[action]")]
     public class PrivateMessagesController : SuperController
     {
         // 注入資料庫上下文
@@ -30,7 +29,6 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
         /// </summary>
         /// <param name="searchString">搜尋關鍵字</param>
         /// <param name="page">當前頁碼，預設為第1頁</param>
-        
         public async Task<IActionResult> Index(string searchString, int page = 1)
         {
             // 檢查管理者權限
@@ -72,7 +70,6 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
         }
 
         [HttpPost]
-        
         //防止跨站請求偽造攻擊
         [ValidateAntiForgeryToken]
         // async/await 非同步版delete寫法
@@ -97,6 +94,31 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
             TempData["SuccessMessage"] = "刪除成功！";
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        [Route("Admin/PrivateMessages/PrivateChat/{senderId}/{receiverId}")]
+        public async Task<IActionResult> PrivateChat(int senderId, int receiverId)
+        {
+            // 檢查管理者權限
+            if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
+                return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
+
+            // 獲取特定發送者和接收者之間的私人訊息（HChatId 為 null）
+            var messages = await _context.HMessages
+                .Where(m =>
+                    m.HChatId == null && // 只顯示私人對話
+                    ((m.HSenderId == senderId && m.HReceiverId == receiverId) ||
+                    (m.HSenderId == receiverId && m.HReceiverId == senderId)))
+                .OrderBy(m => m.HTimestamp)
+                .ToListAsync();
+
+            // 設定 ViewBag 資料
+            ViewBag.SenderId = senderId;
+            ViewBag.ReceiverId = receiverId;
+            ViewBag.MessageCount = messages.Count;
+
+            return View(messages);
         }
 
     }

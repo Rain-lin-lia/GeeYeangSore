@@ -1,0 +1,78 @@
+﻿@* 私人聊天記錄頁面 *@
+@model IEnumerable<GeeYeangSore.Models.HMessage>
+
+@{
+    var currentUserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+}
+
+<div class="container-fluid px-4">
+    @* 頁面標題和返回按鈕 *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>私人聊天記錄</h2>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> 返回列表
+        </a>
+    </div>
+
+    @* 聊天參與者資訊 *@
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">聊天對象</h5>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge bg-primary">
+                    發送者: @Model.FirstOrDefault()?.HSenderRole (@ViewBag.SenderId)
+                </span>
+                <span class="badge bg-info">
+                    接收者: @Model.FirstOrDefault()?.HReceiverRole (@ViewBag.ReceiverId)
+                </span>
+                <span class="badge bg-secondary">
+                    總訊息數: @ViewBag.MessageCount
+                </span>
+            </div>
+        </div>
+    </div>
+
+    @* 聊天訊息區域 *@
+    <div class="chat-container" style="max-height: 600px; overflow-y: auto;">
+        @foreach (var message in Model)
+        {
+            var isSender = message.HSenderId == ViewBag.SenderId;
+            <div class="message-container @(isSender ? "text-end" : "text-start") mb-3">
+                <div class="message-info small text-muted mb-1">
+                    @message.HSenderRole (@message.HSenderId) -
+                    @message.HTimestamp?.ToString("yyyy-MM-dd HH:mm")
+                </div>
+                <div
+                    class="message-bubble @(isSender ? "bg-primary text-white" : "bg-light border") p-3 rounded-3 d-inline-block">
+                    @message.HContent
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .chat-container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .message-bubble {
+        max-width: 70%;
+        word-wrap: break-word;
+    }
+
+    .message-container.text-end .message-bubble {
+        border-top-right-radius: 0;
+    }
+
+    .message-container.text-start .message-bubble {
+        border-top-left-radius: 0;
+    }
+
+    .message-bubble.bg-light {
+        background-color: #e9ecef !important;
+        border: 1px solid #dee2e6;
+    }
+</style>

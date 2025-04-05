@@ -5,45 +5,45 @@
 @* 私人訊息管理頁面 *@
 @model IEnumerable<GeeYeangSore.Models.HMessage>
 
-    <div class="container-fluid px-4">
-        @* 頁面標題 *@
-        <h2 class="mb-4">私人訊息管理</h2>
-        @if (TempData["SuccessMessage"] != null)
-       {
+<div class="container-fluid px-4">
+    @* 頁面標題 *@
+    <h2 class="mb-4">私人訊息管理</h2>
+    @if (TempData["SuccessMessage"] != null)
+    {
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             @TempData["SuccessMessage"]
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        }
+    }
 
-        @* 搜尋表單 *@
-        <form method="get" class="mb-4">
-            <div class="input-group" style="max-width: 400px;">
-                @* 搜尋輸入框，使用 ViewBag.SearchString 保持搜尋條件 *@
-                <input type="text" name="searchString" value="@(ViewBag.SearchString?.ToString().Trim())"
-                       class="form-control" placeholder="搜尋私人訊息" />
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-primary">搜尋</button>
-                </div>
+    @* 搜尋表單 *@
+    <form method="get" class="mb-4">
+        <div class="input-group" style="max-width: 400px;">
+            @* 搜尋輸入框，使用 ViewBag.SearchString 保持搜尋條件 *@
+            <input type="text" name="searchString" value="@(ViewBag.SearchString?.ToString().Trim())"
+                class="form-control" placeholder="搜尋私人訊息" />
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-primary">搜尋</button>
             </div>
-        </form>
+        </div>
+    </form>
 
-        @* 訊息列表表格 *@
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead class="thead-light">
-                    <tr>
-                        @* 表格欄位寬度設定 *@
-                        <th style="width: 15%">發送者</th>
-                        <th style="width: 15%">接收者</th>
-                        <th style="width: 40%">訊息內容</th>
-                        <th style="width: 15%">時間</th>
-                        <th style="width: 15%">操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @* 遍歷訊息列表 *@
-                    @foreach (var item in Model)
+    @* 訊息列表表格 *@
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="thead-light">
+                <tr>
+                    @* 表格欄位寬度設定 *@
+                    <th style="width: 15%">發送者</th>
+                    <th style="width: 15%">接收者</th>
+                    <th style="width: 40%">訊息內容</th>
+                    <th style="width: 15%">時間</th>
+                    <th style="width: 15%">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                @* 遍歷訊息列表 *@
+                @foreach (var item in Model)
                 {
                     <tr>
                         <td>@item.HSenderId (@item.HSenderRole)</td>
@@ -52,34 +52,36 @@
                         <td>@(item.HTimestamp?.ToString("yyyy-MM-dd HH:mm"))</td>
                         <td>
                             @* 操作按鈕 *@
-                            <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@item.HMessageId">查看對話</a>
+                            <a class="btn btn-primary btn-sm" asp-area="Admin" asp-controller="PrivateMessages"
+                                asp-action="PrivateChat" asp-route-senderId="@item.HSenderId"
+                                asp-route-receiverId="@item.HReceiverId">查看對話</a>
                             <form asp-action="Delete" method="post" asp-area="Admin" asp-controller="PrivateMessages"
-                                  asp-route-id="@item.HMessageId" onsubmit="return confirm('確定要刪除這則訊息嗎？');"
-                                  style="display:inline;">
+                                asp-route-id="@item.HMessageId" onsubmit="return confirm('確定要刪除這則訊息嗎？');"
+                                style="display:inline;">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-danger btn-sm">刪除</button>
                             </form>
                         </td>
                     </tr>
                 }
-                </tbody>
-            </table>
-        </div>
+            </tbody>
+        </table>
+    </div>
 
-        @* 分頁導航 *@
-        @if (ViewBag.TotalPages > 0)
+    @* 分頁導航 *@
+    @if (ViewBag.TotalPages > 0)
     {
         <nav aria-label="Page navigation" class="mt-4">
             <ul class="pagination justify-content-center">
                 @* 生成分頁按鈕，保持搜尋條件 *@
                 @for (int i = 1; i <= ViewBag.TotalPages; i++)
                 {
-                <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
-                    <a class="page-link" asp-action="Index" asp-route-page="@i"
-                       asp-route-searchString="@ViewBag.SearchString">@i</a>
-                </li>
+                    <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@i"
+                            asp-route-searchString="@ViewBag.SearchString">@i</a>
+                    </li>
                 }
             </ul>
         </nav>
     }
-    </div>
+</div>
