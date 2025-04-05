@@ -5,7 +5,7 @@ using GeeYeangSore.Controllers;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 
-namespace GeeYeangSore.Areas.Admin.Controllers
+namespace GeeYeangSore.Areas.Admin.Controllers.Messages
 {
     /// <summary>
     /// 私人訊息管理控制器
@@ -29,6 +29,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers
         /// <param name="searchString">搜尋關鍵字</param>
         /// <param name="page">當前頁碼，預設為第1頁</param>
         [Area("Admin")]
+        [Route("Admin/Messages/PrivateMessages/Index/[controller]/[action]")]
         public async Task<IActionResult> Index(string searchString, int page = 1)
         {
             // 檢查管理者權限
@@ -38,7 +39,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers
             // 建立基礎查詢
             var query = _context.HMessages.AsQueryable();
 
-            // 如果有搜尋關鍵字，則進行篩選（移除前後空白）
+            // 如果有搜尋關鍵字，則進行篩選
             if (!string.IsNullOrEmpty(searchString?.Trim()))
             {
                 var trimmedSearch = searchString.Trim();
