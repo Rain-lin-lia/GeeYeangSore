@@ -10,6 +10,8 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
     /// <summary>
     /// 私人訊息管理控制器
     /// </summary>
+    [Area("Admin")]
+    [Route("[area]/[controller]/[action]")]
     public class PrivateMessagesController : SuperController
     {
         // 注入資料庫上下文
@@ -28,8 +30,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
         /// </summary>
         /// <param name="searchString">搜尋關鍵字</param>
         /// <param name="page">當前頁碼，預設為第1頁</param>
-        [Area("Admin")]
-        [Route("Admin/Messages/PrivateMessages/Index/[controller]/[action]")]
+        
         public async Task<IActionResult> Index(string searchString, int page = 1)
         {
             // 檢查管理者權限
@@ -69,5 +70,34 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
             // 返回視圖，並傳入訊息列表
             return View(messages);
         }
+
+        [HttpPost]
+        
+        //防止跨站請求偽造攻擊
+        [ValidateAntiForgeryToken]
+        // async/await 非同步版delete寫法
+        public async Task<IActionResult> Delete(int id)
+        {
+
+            // 檢查管理者權限
+            if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
+                return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
+
+            var message = await _context.HMessages.FindAsync(id);
+            if (message == null)
+            {
+                return NotFound();
+            }
+            //記錄「我要刪除這筆」，還沒有真的刪除到資料庫
+            _context.HMessages.Remove(message);
+            //把剛剛註冊的刪除動作，真正同步到資料庫
+            await _context.SaveChangesAsync();
+
+            //刪除成功提示
+            TempData["SuccessMessage"] = "刪除成功！";
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }
