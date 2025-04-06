@@ -45,9 +45,9 @@ public partial class HProperty
 
     public DateTime? HLastUpdated { get; set; }
 
-    public bool? HIsVip { get; set; }
+    public bool HIsVip { get; set; }
 
-    public bool? HIsShared { get; set; }
+    public bool HIsShared { get; set; }
 
     public virtual ICollection<HAd> HAds { get; set; } = new List<HAd>();
 

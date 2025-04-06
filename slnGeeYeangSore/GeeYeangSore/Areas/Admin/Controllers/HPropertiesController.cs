@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GeeYeangSore.Models;
+using GeeYeangSore.Areas.Admin.HPropertyDto;
 
 namespace GeeYeangSore.Areas.Admin.Controllers
 {
@@ -22,9 +23,36 @@ namespace GeeYeangSore.Areas.Admin.Controllers
         // GET: Admin/HProperties
         public async Task<IActionResult> Index()
         {
-            var geeYeangSoreContext = _context.HProperties.Include(h => h.HLandlord);
-            return View(await geeYeangSoreContext.ToListAsync());
+            var result = from h in _context.HProperties
+                         join l in _context.HLandlords on h.HLandlordId equals l.HLandlordId
+                         select new HPropertyDto
+                         {
+                              HPropertyId = h.HPropertyId,
+                              HPropertyTitle = h.HPropertyTitle,
+                              HDescription = h.HDescription,
+                              HAddress = h.HAddress,
+                              HCity = h.HCity,
+                              HDistrict = h.HDistrict,
+                              HZipcode = h.HZipcode,
+                              HRentPrice = h.HRentPrice,
+                              HPropertyType = h.HPropertyType,
+                              HRoomCount = h.HRoomCount,
+                              HBathroomCount = h.HBathroomCount,
+                              HArea = h.HArea,
+                              HFloor = h.HFloor,
+                              HTotalFloors = h.HTotalFloors,
+                              HAvailabilityStatus = h.HAvailabilityStatus,
+                              HBuildingType = h.HBuildingType,
+                              HScore = h.HScore,
+                              HPublishedDate = h.HPublishedDate,
+                              HLastUpdated = h.HLastUpdated,
+                              HIsVip = h.HIsVip,
+                              HIsShared = h.HIsShared,
+                              LandlordName = l.HLandlordName // 假設 Landlord 有 Name 屬性
+                          };
+            return View(await result.ToListAsync());
         }
+
 
         // GET: Admin/HProperties/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -53,18 +81,41 @@ namespace GeeYeangSore.Areas.Admin.Controllers
         }
 
         // POST: Admin/HProperties/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("HPropertyId,HLandlordId,HPropertyTitle,HDescription,HAddress,HCity,HDistrict,HZipcode,HRentPrice,HPropertyType,HRoomCount,HBathroomCount,HArea,HFloor,HTotalFloors,HAvailabilityStatus,HBuildingType,HScore,HPublishedDate,HLastUpdated,HIsVip,HIsShared")] HProperty hProperty)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(hProperty);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    // 設置默認值（如果需要）
+                    if (hProperty.HPublishedDate == null)
+                    {
+                        hProperty.HPublishedDate = DateTime.Now;
+                    }
+                    if (hProperty.HLastUpdated == null)
+                    {
+                        hProperty.HLastUpdated = DateTime.Now;
+                    }
+
+                    _context.Add(hProperty);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    // 記錄錯誤（在生產環境中可以使用日誌框架）
+                    ModelState.AddModelError("", "保存失敗：" + ex.Message);
+                }
             }
+
+            // 如果 ModelState 無效，顯示驗證錯誤
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                Console.WriteLine(error.ErrorMessage); // 或者使用日誌
+            }
+
             ViewData["HLandlordId"] = new SelectList(_context.HLandlords, "HLandlordId", "HLandlordId", hProperty.HLandlordId);
             return View(hProperty);
         }
@@ -87,8 +138,6 @@ namespace GeeYeangSore.Areas.Admin.Controllers
         }
 
         // POST: Admin/HProperties/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("HPropertyId,HLandlordId,HPropertyTitle,HDescription,HAddress,HCity,HDistrict,HZipcode,HRentPrice,HPropertyType,HRoomCount,HBathroomCount,HArea,HFloor,HTotalFloors,HAvailabilityStatus,HBuildingType,HScore,HPublishedDate,HLastUpdated,HIsVip,HIsShared")] HProperty hProperty)
