@@ -1,0 +1,122 @@
+﻿@model GeeYeangSore.Models.HProperty
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>HProperty</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="HLandlordId" class="control-label"></label>
+                <select asp-for="HLandlordId" class ="form-control" asp-items="ViewBag.HLandlordId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="HPropertyTitle" class="control-label"></label>
+                <input asp-for="HPropertyTitle" class="form-control" />
+                <span asp-validation-for="HPropertyTitle" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HDescription" class="control-label"></label>
+                <input asp-for="HDescription" class="form-control" />
+                <span asp-validation-for="HDescription" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HAddress" class="control-label"></label>
+                <input asp-for="HAddress" class="form-control" />
+                <span asp-validation-for="HAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HCity" class="control-label"></label>
+                <input asp-for="HCity" class="form-control" />
+                <span asp-validation-for="HCity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HDistrict" class="control-label"></label>
+                <input asp-for="HDistrict" class="form-control" />
+                <span asp-validation-for="HDistrict" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HZipcode" class="control-label"></label>
+                <input asp-for="HZipcode" class="form-control" />
+                <span asp-validation-for="HZipcode" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HRentPrice" class="control-label"></label>
+                <input asp-for="HRentPrice" class="form-control" />
+                <span asp-validation-for="HRentPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HPropertyType" class="control-label"></label>
+                <input asp-for="HPropertyType" class="form-control" />
+                <span asp-validation-for="HPropertyType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HRoomCount" class="control-label"></label>
+                <input asp-for="HRoomCount" class="form-control" />
+                <span asp-validation-for="HRoomCount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HBathroomCount" class="control-label"></label>
+                <input asp-for="HBathroomCount" class="form-control" />
+                <span asp-validation-for="HBathroomCount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HArea" class="control-label"></label>
+                <input asp-for="HArea" class="form-control" />
+                <span asp-validation-for="HArea" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HFloor" class="control-label"></label>
+                <input asp-for="HFloor" class="form-control" />
+                <span asp-validation-for="HFloor" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HTotalFloors" class="control-label"></label>
+                <input asp-for="HTotalFloors" class="form-control" />
+                <span asp-validation-for="HTotalFloors" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HAvailabilityStatus" class="control-label"></label>
+                <input asp-for="HAvailabilityStatus" class="form-control" />
+                <span asp-validation-for="HAvailabilityStatus" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HBuildingType" class="control-label"></label>
+                <input asp-for="HBuildingType" class="form-control" />
+                <span asp-validation-for="HBuildingType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HScore" class="control-label"></label>
+                <input asp-for="HScore" class="form-control" />
+                <span asp-validation-for="HScore" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HPublishedDate" class="control-label"></label>
+                <input asp-for="HPublishedDate" class="form-control" />
+                <span asp-validation-for="HPublishedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="HLastUpdated" class="control-label"></label>
+                <input asp-for="HLastUpdated" class="form-control" />
+                <span asp-validation-for="HLastUpdated" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

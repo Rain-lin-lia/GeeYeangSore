@@ -1,0 +1,155 @@
+﻿@model IEnumerable<GeeYeangSore.Models.HProperty>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.HPropertyTitle)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HAddress)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HCity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HDistrict)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HZipcode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HRentPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HPropertyType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HRoomCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HBathroomCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HArea)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HFloor)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HTotalFloors)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HAvailabilityStatus)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HBuildingType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HScore)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HPublishedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HLastUpdated)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HIsVip)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HIsShared)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.HLandlord)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.HPropertyTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HDescription)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HAddress)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HCity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HDistrict)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HZipcode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HRentPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HPropertyType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HRoomCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HBathroomCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HArea)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HFloor)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HTotalFloors)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HAvailabilityStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HBuildingType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HScore)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HPublishedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HLastUpdated)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HIsVip)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HIsShared)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.HLandlord.HLandlordId)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.HPropertyId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.HPropertyId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.HPropertyId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
