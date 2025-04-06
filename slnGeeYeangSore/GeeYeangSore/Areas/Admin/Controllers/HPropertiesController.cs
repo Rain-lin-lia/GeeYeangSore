@@ -6,13 +6,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using GeeYeangSore.Models;
-using GeeYeangSore.Controllers;
 
 namespace GeeYeangSore.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Route("[area]/[controller]/[action]")]
-    public class HPropertiesController : SuperController
+    public class HPropertiesController : Controller
     {
         private readonly GeeYeangSoreContext _context;
 
@@ -61,12 +59,12 @@ namespace GeeYeangSore.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("HPropertyId,HLandlordId,HPropertyTitle,HDescription,HAddress,HCity,HDistrict,HZipcode,HRentPrice,HPropertyType,HRoomCount,HBathroomCount,HArea,HFloor,HTotalFloors,HAvailabilityStatus,HBuildingType,HScore,HPublishedDate,HLastUpdated,HIsVip,HIsShared")] HProperty hProperty)
         {
-            if (ModelState.IsValid)
-            {
+            
+            
                 _context.Add(hProperty);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
-            }
+            
             ViewData["HLandlordId"] = new SelectList(_context.HLandlords, "HLandlordId", "HLandlordId", hProperty.HLandlordId);
             return View(hProperty);
         }
