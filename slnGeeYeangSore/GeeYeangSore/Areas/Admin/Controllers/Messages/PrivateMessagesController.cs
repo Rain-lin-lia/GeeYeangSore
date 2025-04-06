@@ -35,8 +35,11 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
             if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
                 return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
 
-            // 建立基礎查詢
-            var query = _context.HMessages.AsQueryable();
+            // 建立基礎查詢，只顯示有效的私人對話
+            var query = _context.HMessages
+                .Where(m =>
+                    m.HChatId == null && // 只顯示私人對話
+                    m.HReceiverId != null && m.HReceiverId != 0); // 接收者必須存在且不為0
 
             // 如果有搜尋關鍵字，則進行篩選
             if (!string.IsNullOrEmpty(searchString?.Trim()))
@@ -108,6 +111,8 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
             var messages = await _context.HMessages
                 .Where(m =>
                     m.HChatId == null && // 只顯示私人對話
+                     m.HSenderId != null &&  // 發送者存在
+                     m.HReceiverId != null && m.HReceiverId != 0 &&    // 接收者存在
                     ((m.HSenderId == senderId && m.HReceiverId == receiverId) ||
                     (m.HSenderId == receiverId && m.HReceiverId == senderId)))
                 .OrderBy(m => m.HTimestamp)
