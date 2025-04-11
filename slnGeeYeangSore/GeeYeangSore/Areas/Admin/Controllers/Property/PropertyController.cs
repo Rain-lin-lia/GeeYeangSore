@@ -494,18 +494,30 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Property
                             // 處理 checkbox 值
                             try
                             {
-                                features.HAllowsAnimals = Request.Form.ContainsKey("HAllowsAnimals");
-                                features.HHasFurniture = Request.Form.ContainsKey("HHasFurniture");
-                                features.HInternet = Request.Form.ContainsKey("HInternet");
-                                features.HAirConditioning = Request.Form.ContainsKey("HAirConditioning");
-                                features.HTv = Request.Form.ContainsKey("HTv");
-                                features.HRefrigerator = Request.Form.ContainsKey("HRefrigerator");
-                                features.HWashingMachine = Request.Form.ContainsKey("HWashingMachine");
-                                features.HBed = Request.Form.ContainsKey("HBed");
-                                features.HWaterHeater = Request.Form.ContainsKey("HWaterHeater");
-                                features.HGasStove = Request.Form.ContainsKey("HGasStove");
-                                features.HParking = Request.Form.ContainsKey("HParking");
-                                features.HBalcony = Request.Form.ContainsKey("HBalcony");
+                                features.HAllowsAnimals = Request.Form["features.HAllowsAnimals"].ToString() == "on";
+                                features.HAllowsDogs = Request.Form["features.HAllowsDogs"].ToString() == "on";
+                                features.HAllowsCats = Request.Form["features.HAllowsCats"].ToString() == "on";
+                                features.HAllowsCooking = Request.Form["features.HAllowsCooking"].ToString() == "on";
+                                features.HHasFurniture = Request.Form["features.HHasFurniture"].ToString() == "on";
+                                features.HInternet = Request.Form["features.HInternet"].ToString() == "on";
+                                features.HAirConditioning = Request.Form["features.HAirConditioning"].ToString() == "on";
+                                features.HSharedRental = Request.Form["features.HSharedRental"].ToString() == "on";
+                                features.HTv = Request.Form["features.HTv"].ToString() == "on";
+                                features.HRefrigerator = Request.Form["features.HRefrigerator"].ToString() == "on";
+                                features.HWashingMachine = Request.Form["features.HWashingMachine"].ToString() == "on";
+                                features.HBed = Request.Form["features.HBed"].ToString() == "on";
+                                features.HWaterHeater = Request.Form["features.HWaterHeater"].ToString() == "on";
+                                features.HGasStove = Request.Form["features.HGasStove"].ToString() == "on";
+                                features.HCableTv = Request.Form["features.HCableTv"].ToString() == "on";
+                                features.HWaterDispenser = Request.Form["features.HWaterDispenser"].ToString() == "on";
+                                features.HParking = Request.Form["features.HParking"].ToString() == "on";
+                                features.HSocialHousing = Request.Form["features.HSocialHousing"].ToString() == "on";
+                                features.HShortTermRent = Request.Form["features.HShortTermRent"].ToString() == "on";
+                                features.HPublicElectricity = Request.Form["features.HPublicElectricity"].ToString() == "on";
+                                features.HPublicWatercharges = Request.Form["features.HPublicWatercharges"].ToString() == "on";
+                                features.HLandlordShared = Request.Form["features.HLandlordShared"].ToString() == "on";
+                                features.HBalcony = Request.Form["features.HBalcony"].ToString() == "on";
+                                features.HPublicEquipment = Request.Form["features.HPublicEquipment"].ToString() == "on";
                                 
                                 _context.Update(features);
                                 await _context.SaveChangesAsync();

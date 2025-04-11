@@ -232,124 +232,124 @@
                                 var features = Model.HPropertyFeatures.FirstOrDefault();
                                 <div class="col-md-6">
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HAllowsAnimals" @(features?.HAllowsAnimals == true ? "checked" : "") />
-                                        <label class="form-check-label">允許養寵物</label>
+                                        <input type="checkbox" class="form-check-input" id="HAllowsAnimals" name="features.HAllowsAnimals" @(features?.HAllowsAnimals == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HAllowsAnimals">允許養寵物</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HAllowsDogs" @(features?.HAllowsDogs == true ? "checked" : "") />
-                                        <label class="form-check-label">允許養狗</label>
+                                        <input type="checkbox" class="form-check-input" id="HAllowsDogs" name="features.HAllowsDogs" @(features?.HAllowsDogs == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HAllowsDogs">允許養狗</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HAllowsCats" @(features?.HAllowsCats == true ? "checked" : "") />
-                                        <label class="form-check-label">允許養貓</label>
+                                        <input type="checkbox" class="form-check-input" id="HAllowsCats" name="features.HAllowsCats" @(features?.HAllowsCats == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HAllowsCats">允許養貓</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HAllowsCooking" @(features?.HAllowsCooking == true ? "checked" : "") />
-                                        <label class="form-check-label">允許開伙</label>
+                                        <input type="checkbox" class="form-check-input" id="HAllowsCooking" name="features.HAllowsCooking" @(features?.HAllowsCooking == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HAllowsCooking">允許開伙</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HHasFurniture" @(features?.HHasFurniture == true ? "checked" : "") />
-                                        <label class="form-check-label">附家具</label>
+                                        <input type="checkbox" class="form-check-input" id="HHasFurniture" name="features.HHasFurniture" @(features?.HHasFurniture == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HHasFurniture">附家具</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HInternet" @(features?.HInternet == true ? "checked" : "") />
-                                        <label class="form-check-label">網路</label>
+                                        <input type="checkbox" class="form-check-input" id="HInternet" name="features.HInternet" @(features?.HInternet == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HInternet">網路</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HAirConditioning" @(features?.HAirConditioning == true ? "checked" : "") />
-                                        <label class="form-check-label">冷氣</label>
+                                        <input type="checkbox" class="form-check-input" id="HAirConditioning" name="features.HAirConditioning" @(features?.HAirConditioning == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HAirConditioning">冷氣</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HSharedRental" @(features?.HSharedRental == true ? "checked" : "") />
-                                        <label class="form-check-label">分租套房</label>
+                                        <input type="checkbox" class="form-check-input" id="HSharedRental" name="features.HSharedRental" @(features?.HSharedRental == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HSharedRental">分租套房</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HTv" @(features?.HTv == true ? "checked" : "") />
-                                        <label class="form-check-label">電視</label>
+                                        <input type="checkbox" class="form-check-input" id="HTv" name="features.HTv" @(features?.HTv == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HTv">電視</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HRefrigerator" @(features?.HRefrigerator == true ? "checked" : "") />
-                                        <label class="form-check-label">冰箱</label>
+                                        <input type="checkbox" class="form-check-input" id="HRefrigerator" name="features.HRefrigerator" @(features?.HRefrigerator == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HRefrigerator">冰箱</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HWashingMachine" @(features?.HWashingMachine == true ? "checked" : "") />
-                                        <label class="form-check-label">洗衣機</label>
+                                        <input type="checkbox" class="form-check-input" id="HWashingMachine" name="features.HWashingMachine" @(features?.HWashingMachine == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HWashingMachine">洗衣機</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HBed" @(features?.HBed == true ? "checked" : "") />
-                                        <label class="form-check-label">床</label>
+                                        <input type="checkbox" class="form-check-input" id="HBed" name="features.HBed" @(features?.HBed == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HBed">床</label>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HWaterHeater" @(features?.HWaterHeater == true ? "checked" : "") />
-                                        <label class="form-check-label">熱水器</label>
+                                        <input type="checkbox" class="form-check-input" id="HWaterHeater" name="features.HWaterHeater" @(features?.HWaterHeater == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HWaterHeater">熱水器</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HGasStove" @(features?.HGasStove == true ? "checked" : "") />
-                                        <label class="form-check-label">瓦斯爐</label>
+                                        <input type="checkbox" class="form-check-input" id="HGasStove" name="features.HGasStove" @(features?.HGasStove == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HGasStove">瓦斯爐</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HCableTv" @(features?.HCableTv == true ? "checked" : "") />
-                                        <label class="form-check-label">有線電視</label>
+                                        <input type="checkbox" class="form-check-input" id="HCableTv" name="features.HCableTv" @(features?.HCableTv == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HCableTv">有線電視</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HWaterDispenser" @(features?.HWaterDispenser == true ? "checked" : "") />
-                                        <label class="form-check-label">飲水機</label>
+                                        <input type="checkbox" class="form-check-input" id="HWaterDispenser" name="features.HWaterDispenser" @(features?.HWaterDispenser == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HWaterDispenser">飲水機</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HParking" @(features?.HParking == true ? "checked" : "") />
-                                        <label class="form-check-label">停車位</label>
+                                        <input type="checkbox" class="form-check-input" id="HParking" name="features.HParking" @(features?.HParking == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HParking">停車位</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HSocialHousing" @(features?.HSocialHousing == true ? "checked" : "") />
-                                        <label class="form-check-label">社會住宅</label>
+                                        <input type="checkbox" class="form-check-input" id="HSocialHousing" name="features.HSocialHousing" @(features?.HSocialHousing == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HSocialHousing">社會住宅</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HShortTermRent" @(features?.HShortTermRent == true ? "checked" : "") />
-                                        <label class="form-check-label">短期租賃</label>
+                                        <input type="checkbox" class="form-check-input" id="HShortTermRent" name="features.HShortTermRent" @(features?.HShortTermRent == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HShortTermRent">短期租賃</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HPublicElectricity" @(features?.HPublicElectricity == true ? "checked" : "") />
-                                        <label class="form-check-label">公共電費</label>
+                                        <input type="checkbox" class="form-check-input" id="HPublicElectricity" name="features.HPublicElectricity" @(features?.HPublicElectricity == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HPublicElectricity">公共電費</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HPublicWatercharges" @(features?.HPublicWatercharges == true ? "checked" : "") />
-                                        <label class="form-check-label">公共水費</label>
+                                        <input type="checkbox" class="form-check-input" id="HPublicWatercharges" name="features.HPublicWatercharges" @(features?.HPublicWatercharges == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HPublicWatercharges">公共水費</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HLandlordShared" @(features?.HLandlordShared == true ? "checked" : "") />
-                                        <label class="form-check-label">房東同住</label>
+                                        <input type="checkbox" class="form-check-input" id="HLandlordShared" name="features.HLandlordShared" @(features?.HLandlordShared == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HLandlordShared">房東同住</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HBalcony" @(features?.HBalcony == true ? "checked" : "") />
-                                        <label class="form-check-label">陽台</label>
+                                        <input type="checkbox" class="form-check-input" id="HBalcony" name="features.HBalcony" @(features?.HBalcony == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HBalcony">陽台</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HPublicEquipment" @(features?.HPublicEquipment == true ? "checked" : "") />
-                                        <label class="form-check-label">公共設備</label>
+                                        <input type="checkbox" class="form-check-input" id="HPublicEquipment" name="features.HPublicEquipment" @(features?.HPublicEquipment == true ? "checked" : "") />
+                                        <label class="form-check-label" for="HPublicEquipment">公共設備</label>
                                     </div>
                                 </div>
                             }
