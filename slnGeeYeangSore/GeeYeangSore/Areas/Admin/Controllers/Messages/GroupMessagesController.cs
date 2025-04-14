@@ -209,7 +209,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers
                 HAuthorId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0"),
                 HAuthorType = "Admin",
                 HReason = reason,
-                HStatus = "Pending",
+                HStatus = "待處理",
                 HCreatedAt = DateTime.Now,
                 HReportType = "Group"  // 設置為群組訊息檢舉
             };

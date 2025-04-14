@@ -118,8 +118,8 @@
                 class="btn btn-filter @(string.IsNullOrEmpty(ViewBag.Status) ? "active" : "")">
                 全部
             </a>
-            <a href="@Url.Action("ReportList", "GroupMessages", new { area = "Admin", status = "Pending" })"
-                class="btn btn-filter @(ViewBag.Status == "Pending" ? "active" : "")">
+            <a href="@Url.Action("ReportList", "GroupMessages", new { area = "Admin", status = "待處理" })"
+                class="btn btn-filter @(ViewBag.Status == "待處理" ? "active" : "")">
                 待處理
             </a>
             <a href="@Url.Action("ReportList", "GroupMessages", new { area = "Admin", status = "已核准" })"
@@ -174,9 +174,9 @@
                                         @{
                                             var (statusText, statusClass) = report.HStatus switch
                                             {
-                                                "Pending" => ("待處理", "status-pending"),
-                                                "Approved" => ("已核准", "status-approved"),
-                                                "Rejected" => ("已拒絕", "status-rejected"),
+                                                "待處理" => ("待處理", "status-pending"),
+                                                "已核准" => ("已核准", "status-approved"),
+                                                "已拒絕" => ("已拒絕", "status-rejected"),
                                                 _ => (report.HStatus, "status-pending")
                                             };
                                         }
@@ -191,7 +191,7 @@
                                                     <i class="fas fa-eye"></i> 查看訊息
                                                 </a>
                                             }
-                                            @if (report.HStatus == "Pending")
+                                            @if (report.HStatus == "待處理")
                                             {
                                                 <button type="button" class="btn btn-sm btn-outline-success"
                                                     onclick="updateStatus(@report.HReportId, '已核准')">

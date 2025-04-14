@@ -84,28 +84,27 @@
                                 <td>@report.HAuthorId (@report.HAuthorType)</td>
                                 <td>@report.HCreatedAt?.ToString("yyyy-MM-dd HH:mm")</td>
                                 <td>
-                                    <span
-                                        class="badge @(report.HStatus == "Pending" ? "bg-warning" : 
-                                                                                                                                                                                                                                                                                                        report.HStatus == "Approved" ? "bg-success" : "bg-danger")">
+                                    <span class="badge @(report.HStatus == "待處理" ? "bg-warning" : 
+                                            report.HStatus == "已核准" ? "bg-success" : "bg-danger")">
                                     @report.HStatus
                                 </span>
                             </td>
                             <td>@(report.HAdminId?.ToString() ?? "-")</td>
                             <td>@(report.HReviewedAt?.ToString("yyyy-MM-dd HH:mm") ?? "-")</td>
                             <td>
-                                @if (report.HStatus == "Pending")
+                                @if (report.HStatus == "待處理")
                                     {
                                         <div class="btn-group">
                                             <form asp-action="ProcessReport" method="post" style="display:inline;">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="reportId" value="@report.HReportId" />
-                                                <input type="hidden" name="status" value="Approved" />
+                                                <input type="hidden" name="status" value="已核准" />
                                                 <button type="submit" class="btn btn-success btn-sm">通過</button>
                                             </form>
                                             <form asp-action="ProcessReport" method="post" style="display:inline;">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="reportId" value="@report.HReportId" />
-                                                <input type="hidden" name="status" value="Rejected" />
+                                                <input type="hidden" name="status" value="已拒絕" />
                                                 <button type="submit" class="btn btn-danger btn-sm">拒絕</button>
                                             </form>
                                         </div>
@@ -255,10 +254,10 @@
             function showToast(message, isSuccess) {
                 const toastId = 'toast-' + Date.now();
                 const toast = $(`<div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-                                    <div class="toast-body bg-${isSuccess ? 'success' : 'danger'} text-white">
-                                        ${message}
-                                    </div>
-                                </div>`);
+                                        <div class="toast-body bg-${isSuccess ? 'success' : 'danger'} text-white">
+                                            ${message}
+                                        </div>
+                                    </div>`);
 
                 $('.toast-container').append(toast);
                 toast.toast({ delay: 3000 }).toast('show');

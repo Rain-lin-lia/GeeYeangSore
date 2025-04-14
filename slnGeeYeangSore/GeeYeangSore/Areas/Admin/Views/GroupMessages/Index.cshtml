@@ -52,15 +52,15 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div class="d-flex">
-            <form method="get" class="me-2">
-                <div class="input-group">
-                    <input type="text" name="search" class="form-control" placeholder="搜尋群組訊息..."
-                        value="@ViewBag.Search">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
+            @* <form method="get" class="me-2"> *@
+            @*     <div class="input-group"> *@
+            @*         <input type="text" name="search" class="form-control" placeholder="搜尋群組訊息..." *@
+            @*             value="@ViewBag.Search"> *@
+            @*         <button type="submit" class="btn btn-primary"> *@
+            @*             <i class="fas fa-search"></i> *@
+            @*         </button> *@
+            @*     </div> *@
+            @* </form> *@
             <a href="@Url.Action("ReportList", "GroupMessages", new { area = "Admin" })" class="btn btn-warning">
                 <i class="fas fa-flag"></i> 群組檢舉列表
             </a>

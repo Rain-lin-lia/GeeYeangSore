@@ -113,10 +113,10 @@
                                     case "待處理":
                                         <span class="badge bg-warning">待處理</span>
                                         break;
-                                    case "核准":
+                                    case "已核准":
                                         <span class="badge bg-danger">檢舉成立</span>
                                         break;
-                                    case "拒絕":
+                                    case "已拒絕":
                                         <span class="badge bg-secondary">檢舉駁回</span>
                                         break;
                                     default:
@@ -140,7 +140,7 @@
                                 {
                                     <button type="button" class="btn btn-warning btn-sm" disabled>已檢舉</button>
                                 }
-                               
+
                                 <button type="button" class="btn btn-danger btn-sm"
                                     onclick="deleteMessage(@message.HMessageId)">刪除</button>
                             </div>
@@ -251,19 +251,19 @@
                                 const messageDiv = document.createElement('div');
                                 messageDiv.className = `chat-message ${message.hSenderId == senderId ? 'sender' : 'receiver'} mb-3`;
                                 messageDiv.innerHTML = `
-                                                                                    <div class="message-content p-3 rounded ${message.hIsDeleted == 1 ? 'deleted' : ''}" 
-                                                                                         style="background-color: ${message.hSenderId == senderId ? '#e3f2fd' : '#f5f5f5'}; 
-                                                                                                max-width: 80%; 
-                                                                                                margin-${message.hSenderId == senderId ? 'right' : 'left'}: auto;">
-                                                                                        <div class="message-sender small text-muted mb-1">${message.hSenderId == senderId ? message.senderName : message.receiverName}</div>
-                                                                                        <div class="message-text">${message.hContent}</div>
-                                                                                        <div class="message-time text-muted small">
-                                                                                            ${new Date(message.hTimestamp).toLocaleString()}
-                                                                                            ${message.hIsDeleted == 1 ? '<span class="badge bg-danger ms-2">已刪除</span>' : ''}
-                                                                                            ${message.hIsEdited == 1 ? '<span class="badge bg-warning ms-2">已編輯</span>' : ''}
+                                                                                        <div class="message-content p-3 rounded ${message.hIsDeleted == 1 ? 'deleted' : ''}" 
+                                                                                             style="background-color: ${message.hSenderId == senderId ? '#e3f2fd' : '#f5f5f5'}; 
+                                                                                                    max-width: 80%; 
+                                                                                                    margin-${message.hSenderId == senderId ? 'right' : 'left'}: auto;">
+                                                                                            <div class="message-sender small text-muted mb-1">${message.hSenderId == senderId ? message.senderName : message.receiverName}</div>
+                                                                                            <div class="message-text">${message.hContent}</div>
+                                                                                            <div class="message-time text-muted small">
+                                                                                                ${new Date(message.hTimestamp).toLocaleString()}
+                                                                                                ${message.hIsDeleted == 1 ? '<span class="badge bg-danger ms-2">已刪除</span>' : ''}
+                                                                                                ${message.hIsEdited == 1 ? '<span class="badge bg-warning ms-2">已編輯</span>' : ''}
+                                                                                            </div>
                                                                                         </div>
-                                                                                    </div>
-                                                                                `;
+                                                                                    `;
                                 chatContainer.appendChild(messageDiv);
                             });
 

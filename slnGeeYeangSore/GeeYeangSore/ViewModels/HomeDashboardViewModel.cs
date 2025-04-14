@@ -13,7 +13,8 @@ namespace GeeYeangSore.ViewModels
         public int PendingPropertyCount { get; set; }        // 待審核房源數
         public int PendingIdentityCount { get; set; }        // 待審核身份驗證數 
         public int PendingReportCount { get; set; }          // 待處理檢舉數
-        
+        public int PendingLandlordCount { get; set; }      // 待審核房東數
+
 
         // 系統公告
         public List<SystemAnnouncement> SystemAnnouncements { get; set; }

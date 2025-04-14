@@ -206,114 +206,105 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //檢舉功能
         public async Task<IActionResult> Report(int messageId, string reason)
         {
-            // 檢查管理者權限
             if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
                 return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
 
-            // 檢查訊息是否存在
             var message = await _context.HMessages.FindAsync(messageId);
             if (message == null)
             {
                 return NotFound();
             }
 
-            // 創建新的檢舉記錄
             var report = new HReport
             {
                 HMessageId = messageId,
-                HAuthorId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "0"),
-                HAuthorType = "Admin", // 檢舉者類型為管理員
+                HAuthorId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "0"),
+                HAuthorType = "Admin",
                 HReason = reason,
-                HStatus = "待處理", // 初始狀態為待處理
+                HStatus = "待處理",
                 HCreatedAt = DateTime.Now,
                 HReportType = "Private"
             };
 
-            // 將檢舉記錄添加到資料庫
             _context.HReports.Add(report);
             await _context.SaveChangesAsync();
 
-            // 設置成功訊息
             TempData["SuccessMessage"] = "檢舉已成功提交！";
 
-            // 重定向回列表頁面
-            return RedirectToAction(nameof(Index));
+            // 這裡改掉！重新導向回私人聊天頁面，而不是列表
+            if (message.HSenderId.HasValue && message.HReceiverId.HasValue)
+            {
+                return RedirectToAction("PrivateChat", new
+                {
+                    senderId = message.HSenderId.Value,
+                    receiverId = message.HReceiverId.Value,
+                    senderRole = message.HSenderRole,
+                    receiverRole = message.HReceiverRole
+                });
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> ProcessReport(int reportId, string status)
         {
             try
             {
-                Console.WriteLine("【流程0】收到 ProcessReport 請求，reportId=" + reportId + ", status=" + status);
-
+                // 檢查管理者權限
                 if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
-                {
-                    Console.WriteLine("【流程1】權限不足，跳轉 NoPermission");
                     return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
-                }
 
-                var report = await _context.HReports.FirstOrDefaultAsync(r => r.HReportId == reportId);
+                // 檢查檢舉是否存在
+                var report = await _context.HReports.FindAsync(reportId);
                 if (report == null)
                 {
-                    Console.WriteLine("【流程2】找不到該檢舉記錄，reportId=" + reportId);
-                    TempData["ErrorMessage"] = "找不到該檢舉記錄！";
-                    return RedirectToAction(nameof(ReportList));
-                }
-                Console.WriteLine("【流程2】成功找到 report");
-
-                var adminIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (string.IsNullOrEmpty(adminIdStr) || !int.TryParse(adminIdStr, out int adminId))
-                {
-                    Console.WriteLine("【流程3】adminId 取得失敗，adminIdStr=" + adminIdStr);
-                    TempData["ErrorMessage"] = "登入狀態異常，請重新登入！";
-                    return RedirectToAction(nameof(ReportList));
-                }
-                Console.WriteLine("【流程3】成功取得 adminId=" + adminId);
-
-                if (string.IsNullOrEmpty(status))
-                {
-                    Console.WriteLine("【流程4】status 參數為空");
-                    TempData["ErrorMessage"] = "狀態參數錯誤，請重新操作！";
-                    return RedirectToAction(nameof(ReportList));
+                    return Json(new { success = false, message = "找不到此檢舉" });
                 }
 
-                var chineseStatus = status switch
+                // 從 Session 取管理員帳號
+                var account = HttpContext.Session.GetString(CDictionary.SK_LOGINED_USER);
+                if (string.IsNullOrEmpty(account))
                 {
-                    "Approved" => "核准",
-                    "Rejected" => "拒絕",
-                    _ => null
-                };
-                if (chineseStatus == null)
-                {
-                    Console.WriteLine("【流程4】status 轉換失敗，status=" + status);
-                    TempData["ErrorMessage"] = "狀態參數無效，請重新操作！";
-                    return RedirectToAction(nameof(ReportList));
+                    return Json(new { success = false, message = "登入狀態異常，請重新登入！" });
                 }
-                Console.WriteLine("【流程4】status 轉換為中文：" + chineseStatus);
 
-                // 更新 report
-                report.HStatus = chineseStatus;
-                report.HAdminId = adminId;
+                // 根據帳號找出 HAdmin
+                var admin = await _context.HAdmins.FirstOrDefaultAsync(a => a.HAccount == account);
+                if (admin == null)
+                {
+                    return Json(new { success = false, message = "登入狀態異常，請重新登入！" });
+                }
+
+                if (string.IsNullOrEmpty(status) || (status != "已核准" && status != "已拒絕"))
+                {
+                    return Json(new { success = false, message = "無效的狀態" });
+                }
+
+                // 更新檢舉資料
+                report.HStatus = status;
                 report.HReviewedAt = DateTime.Now;
-                Console.WriteLine("【流程5】已更新 report 欄位，準備儲存");
+                report.HAdminId = admin.HAdminId;
 
-                await _context.SaveChangesAsync();
-                Console.WriteLine("【流程6】儲存 SaveChangesAsync 成功");
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    var innerException = ex.InnerException?.Message ?? ex.Message;
+                    return Json(new { success = false, message = $"資料庫更新失敗: {innerException}" });
+                }
 
-                TempData["SuccessMessage"] = "檢舉已成功處理！";
-                return RedirectToAction(nameof(ReportList));
+                return Json(new { success = true, message = "檢舉狀態已更新" });
             }
             catch (Exception ex)
             {
-                Console.WriteLine("【流程X】處理檢舉時發生錯誤！");
-                Console.WriteLine(ex.ToString());  // ❗ 請用 ToString() 看完整堆疊
-                TempData["ErrorMessage"] = "處理檢舉時發生錯誤：" + ex.Message;
-                return RedirectToAction(nameof(ReportList));
+                return Json(new { success = false, message = $"更新失敗: {ex.Message}\n{ex.StackTrace}" });
             }
         }
         //檢舉列表頁面
@@ -353,7 +344,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Messages
         {
             // 檢查管理者權限
             if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
-                return Json(new { error = "權限不足" });
+                return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
 
             // 獲取房客資訊
             var tenants = await _context.HTenants

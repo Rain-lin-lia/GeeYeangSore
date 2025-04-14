@@ -13,12 +13,66 @@
     <link rel="stylesheet" href="~/css/pageframework.css" />
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
+    <style>
+        /* 側邊欄樣式 */
+        .sidebar {
+            width: 200px;
+            transition: width 0.3s ease;
+            z-index: 1000;
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+        }
+
+        .sidebar.collapsed span {
+            display: none;
+        }
+
+        .sidebar.collapsed .nav-link {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .sidebar.collapsed ul.nav.flex-column.ms-3 {
+            display: none !important;
+        }
+
+        .transition {
+            transition: all 0.3s ease;
+        }
+
+        /* 頁面加載前預防側邊欄跳動 */
+        html.sidebar-collapsed #adminSidebar {
+            width: 60px;
+        }
+
+        html.sidebar-collapsed #adminSidebar span {
+            display: none;
+        }
+
+        html.sidebar-collapsed #adminMain {
+            margin-left: 60px !important;
+            max-width: calc(100% - 60px) !important;
+        }
+
+        /* 在DOMContentLoaded後再啟用過渡動畫 */
+        #adminSidebar,
+        #adminMain {
+            transition: none;
+        }
+
+        .sidebar-transition-ready #adminSidebar,
+        .sidebar-transition-ready #adminMain {
+            transition: all 0.3s ease;
+        }
+    </style>
     @RenderSection("Styles", required: false)
 </head>
 
 <body>
     <!-- 上方導覽列 -->
-    <nav class="navbar navbar-custom px-3 d-flex justify-content-between align-items-center">
+    <nav class="navbar navbar-custom fixed-top px-3 d-flex justify-content-between align-items-center">
         <a class="navbar-brand d-flex align-items-center" asp-area="Admin" asp-controller="Home" asp-action="Index">
             <img class="rounded-circle bg-white p-1" src="~/images/logo2.png" alt="Logo">
             <span class="text-white fw-bold ms-2">後台管理系統</span>
@@ -45,9 +99,11 @@
     </nav>
 
     <!-- 側邊欄 -->
-    <div id="adminSidebar" class="sidebar">
+    <div id="adminSidebar" class="sidebar"
+        style="padding-top: 56px; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto;">
         <div class="px-2 pt-3">
-            <button id="sidebarToggle" class="btn btn-sm btn-light d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+            <button id="sidebarToggle" class="btn btn-sm btn-light d-flex align-items-center justify-content-center"
+                style="width: 36px; height: 36px;">
                 <i class="fa fa-bars"></i>
             </button>
         </div>
@@ -55,38 +111,46 @@
             <li>
                 <a class="nav-link" href="#"><i class="fa fa-users"></i> <span>使用者</span></a>
                 <ul class="nav flex-column ms-3">
-                    <li><a class="nav-link" asp-area="Admin" asp-controller="User" asp-action="UserManagement">使用者管理</a></li>
+                    <li><a class="nav-link" asp-area="Admin" asp-controller="User" asp-action="UserManagement">使用者管理</a>
+                    </li>
                     <li>
-                        <a class="nav-link" asp-area="Admin" asp-controller="AdminManagement" asp-action="AdminManagement">管理者權限</a>
+                        <a class="nav-link" asp-area="Admin" asp-controller="AdminManagement"
+                            asp-action="AdminManagement">管理者權限</a>
                     </li>
                 </ul>
             </li>
             <li>
                 <a class="nav-link" href="#"><i class="fa fa-home"></i> <span>房源</span></a>
                 <ul class="nav flex-column ms-3">
-                    <li><a class="nav-link" asp-area="Admin" asp-controller="PropertyCheck" asp-action="Index">刊登審核</a></li>
+                    <li><a class="nav-link" asp-area="Admin" asp-controller="PropertyCheck" asp-action="Index">刊登審核</a>
+                    </li>
                     <li><a class="nav-link" asp-area="Admin" asp-controller="Property" asp-action="Index">房源列表</a></li>
                 </ul>
             </li>
             <li>
                 <a class="nav-link" href="#"><i class="fa fa-envelope"></i><span>訊息</span></a>
                 <ul class="nav flex-column ms-3">
-                    <li><a class="nav-link" asp-area="Admin" asp-controller="PrivateMessages" asp-action="Index">私人訊息管理</a></li>
-                    <li><a class="nav-link" asp-area="Admin" asp-controller="GroupMessages" asp-action="Index">群組訊息管理</a></li>
+                    <li><a class="nav-link" asp-area="Admin" asp-controller="PrivateMessages"
+                            asp-action="Index">私人訊息管理</a></li>
+                    <li><a class="nav-link" asp-area="Admin" asp-controller="GroupMessages"
+                            asp-action="Index">群組訊息管理</a></li>
                 </ul>
             </li>
             <li>
                 <a class="nav-link" href="#"><i class="fa fa-credit-card"></i> <span>金流管理</span></a>
                 <ul class="nav flex-column ms-3">
-                    <li><a class="nav-link" asp-area="Admin" asp-controller="Transaction" asp-action="Index">交易紀錄</a></li>
+                    <li><a class="nav-link" asp-area="Admin" asp-controller="Transaction" asp-action="Index">交易紀錄</a>
+                    </li>
                     <li><a class="nav-link" asp-area="Admin" asp-controller="Finance" asp-action="Index">金流統計</a></li>
                 </ul>
             </li>
             <li>
                 <a class="nav-link" href="#"><i class="fa fa-chart-line"></i> <span>數據分析</span></a>
                 <ul class="nav flex-column ms-3">
-                    <li><a class="nav-link" asp-area="Admin" asp-controller="DataAnalysis" asp-action="Dashboard">數據分析儀表板</a></li>
-                    <li><a class="nav-link" asp-area="Admin" asp-controller="DataAnalysis" asp-action="TenantDemandTable">用戶分析</a></li>
+                    <li><a class="nav-link" asp-area="Admin" asp-controller="DataAnalysis"
+                            asp-action="Dashboard">數據儀表板</a></li>
+                    <li><a class="nav-link" asp-area="Admin" asp-controller="DataAnalysis"
+                            asp-action="TenantDemandTable">用戶分析</a></li>
                 </ul>
             </li>
             <li>
@@ -103,7 +167,8 @@
     </div>
 
     <!-- 主體內容區塊 -->
-    <main id="adminMain" class="container-fluid transition" style="margin-left: 200px; padding-top: 70px;">
+    <main id="adminMain" class="container-fluid transition"
+        style="margin-left: 200px; padding-top: 70px; overflow-x: hidden; max-width: calc(100% - 200px);">
         @RenderBody()
     </main>
 
@@ -117,23 +182,121 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script>
+        // 在頁面加載前檢查側邊欄狀態並應用
+        (function () {
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+        })();
+    </script>
+
+    <script>
+        // 頁面完全加載後才啟用過渡動畫
+        document.addEventListener('DOMContentLoaded', function () {
+            document.documentElement.classList.add('sidebar-transition-ready');
+        });
+
         function toggleSidebar() {
             const sidebar = document.getElementById('adminSidebar');
             const main = document.getElementById('adminMain');
             const isCollapsed = sidebar.classList.toggle('collapsed');
+
+            // 收起時隱藏所有子選單
             const submenus = sidebar.querySelectorAll('ul ul');
-            submenus.forEach(ul => ul.style.display = 'none');
-            main.style.marginLeft = isCollapsed ? '60px' : '200px';
+            if (isCollapsed) {
+                submenus.forEach(ul => {
+                    ul.style.display = 'none';
+                });
+                main.style.marginLeft = '60px';
+                main.style.maxWidth = 'calc(100% - 60px)';
+            } else {
+                main.style.marginLeft = '200px';
+                main.style.maxWidth = 'calc(100% - 200px)';
+
+                // 展開時恢復之前打開的子選單
+                try {
+                    const openSubmenus = JSON.parse(localStorage.getItem('openSubmenus') || '[]');
+                    document.querySelectorAll('#adminSidebar > ul > li > ul').forEach((submenu, index) => {
+                        if (openSubmenus.includes(index)) {
+                            submenu.style.display = 'block';
+                        }
+                    });
+                } catch (e) {
+                    console.error('Error restoring submenu state:', e);
+                }
+            }
+
+            // 記錄側邊欄狀態
+            localStorage.setItem('sidebarCollapsed', isCollapsed);
+
+            // 記錄子選單狀態
+            const openSubmenus = [];
+            document.querySelectorAll('#adminSidebar > ul > li > ul').forEach((submenu, index) => {
+                if (submenu.style.display === 'block') {
+                    openSubmenus.push(index);
+                }
+            });
+            localStorage.setItem('openSubmenus', JSON.stringify(openSubmenus));
         }
+
+        // 頁面加載時恢復側邊欄狀態
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.getElementById('adminSidebar');
+            const main = document.getElementById('adminMain');
+            const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+
+            if (isCollapsed) {
+                sidebar.classList.add('collapsed');
+                main.style.marginLeft = '60px';
+                main.style.maxWidth = 'calc(100% - 60px)';
+            }
+
+            // 恢復子選單狀態
+            try {
+                const openSubmenus = JSON.parse(localStorage.getItem('openSubmenus') || '[]');
+                document.querySelectorAll('#adminSidebar > ul > li > ul').forEach((submenu, index) => {
+                    if (openSubmenus.includes(index)) {
+                        submenu.style.display = 'block';
+                    }
+                });
+            } catch (e) {
+                console.error('Error restoring submenu state:', e);
+            }
+
+            // 移除頁面加載前的標記
+            document.documentElement.classList.remove('sidebar-collapsed');
+        });
+
         document.getElementById('sidebarToggle').addEventListener('click', toggleSidebar);
 
         const mainLinks = document.querySelectorAll('#adminSidebar > ul > li > a');
-        mainLinks.forEach(link => {
+        mainLinks.forEach((link, index) => {
             link.addEventListener('click', function (e) {
                 const submenu = this.nextElementSibling;
                 if (submenu && submenu.tagName.toLowerCase() === 'ul') {
                     e.preventDefault();
-                    submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+
+                    // 如果側邊欄是收起狀態，先展開側邊欄
+                    const sidebar = document.getElementById('adminSidebar');
+                    const main = document.getElementById('adminMain');
+                    if (sidebar.classList.contains('collapsed')) {
+                        sidebar.classList.remove('collapsed');
+                        main.style.marginLeft = '200px';
+                        main.style.maxWidth = 'calc(100% - 200px)';
+                        localStorage.setItem('sidebarCollapsed', false);
+                    }
+
+                    const isVisible = submenu.style.display === 'block';
+                    submenu.style.display = isVisible ? 'none' : 'block';
+
+                    // 記錄子選單狀態
+                    const openSubmenus = [];
+                    document.querySelectorAll('#adminSidebar > ul > li > ul').forEach((submenu, idx) => {
+                        if (submenu.style.display === 'block') {
+                            openSubmenus.push(idx);
+                        }
+                    });
+                    localStorage.setItem('openSubmenus', JSON.stringify(openSubmenus));
                 }
             });
         });

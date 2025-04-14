@@ -42,9 +42,14 @@
                 <div class="card-body">
                     <ul class="important-notification-list">
                         <li class="d-flex justify-content-between">
+                            <span>待審核房東</span>
+                            <span class="badge badge-pill badge-info">@Model.PendingLandlordCount</span>
+                        </li>
+                        <li class="d-flex justify-content-between">
                             <span>待審核房源</span>
                             <span class="badge badge-pill badge-danger">@Model.PendingPropertyCount</span>
                         </li>
+                        
                         <li class="d-flex justify-content-between">
                             <span>待處理檢舉訊息</span>
                             <span class="badge badge-pill badge-warning">@Model.PendingReportCount</span>
@@ -171,6 +176,11 @@
 
     .badge-warning {
         background-color: #FFD166;
+    }
+
+    .badge-info {
+        background-color: #6BAED6;
+        color: white;
     }
 
     /* 新的快速連結按鈕樣式 */

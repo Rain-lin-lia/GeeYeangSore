@@ -306,16 +306,19 @@
 			$(document).on('click', '.btn-delete', function () {
 				const id = $(this).data('id');
 				if (confirm("確定要刪除這筆使用者資料嗎？")) {
-					$.ajax({
-						url: '@Url.Action("Delete", "User", new { area = "Admin" })/' + id,
-						type: 'POST',
-						success: function () {
-							$('#searchForm').submit();
-						},
-						error: function () {
-							alert("刪除失敗，請稍後再試！");
-						}
-					});
+							$.ajax({
+			url: '/Admin/User/Delete',
+			type: 'POST',
+			data: { id: id }, // ✅ 用傳統表單格式送出
+			success: function () {
+				alert("刪除成功！");
+				$('#searchForm').submit();
+			},
+			error: function () {
+				alert("刪除失敗！");
+			}
+		});
+
 				}
 			});
 		});
