@@ -16,7 +16,11 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // 添加 GeeYeangSoreContext 服務
 builder.Services.AddDbContext<GeeYeangSoreContext>(options =>
-    options.UseSqlServer(connectionString));
+{
+    options.UseSqlServer(connectionString);
+    options.EnableSensitiveDataLogging();  // 啟用敏感數據日誌
+    options.EnableDetailedErrors();        // 啟用詳細錯誤信息
+});
 
 // 添加 IHttpContextAccessor 服務
 builder.Services.AddHttpContextAccessor();
@@ -30,6 +34,9 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+// 添加控制台日誌提供程序
+builder.Logging.AddConsole();
 
 // 添加 Session 服務
 builder.Services.AddSession(options =>

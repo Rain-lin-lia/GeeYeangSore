@@ -97,6 +97,11 @@
     .modal-content {
         background-color: #F0F9F8;
     }
+
+    .form-check-input:checked {
+        background-color: #3CDDD2;
+        border-color: #3CDDD2;
+    }
     .modal-header {
         background-color: #3CDDD2;
         color: #222222;
@@ -115,11 +120,14 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h1>編輯房源</h1>
                 <div>
+                    <button type="submit" form="editForm" class="btn btn-primary">
+                        <i class="fas fa-save"></i> 儲存
+                    </button>
                     <a asp-action="Index" class="btn btn-main">返回列表</a>
                 </div>
             </div>
 
-            <form asp-area="Admin" asp-controller="Property" asp-action="Edit" asp-route-id="@Model.HPropertyId" method="post" enctype="multipart/form-data">
+            <form id="editForm" asp-area="Admin" asp-controller="Property" asp-action="Edit" asp-route-id="@Model.HPropertyId" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
 
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -173,6 +181,12 @@
                                     <input asp-for="HZipcode" class="form-control" />
                                     <span asp-validation-for="HZipcode" class="text-danger"></span>
                                 </div>
+
+                                <div class="form-group mb-3">
+                                    <label asp-for="HDescription" class="control-label">描述</label>
+                                    <textarea asp-for="HDescription" class="form-control" rows="4"></textarea>
+                                    <span asp-validation-for="HDescription" class="text-danger"></span>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
@@ -209,6 +223,16 @@
                                     <label asp-for="HTotalFloors" class="control-label">總樓層</label>
                                     <input asp-for="HTotalFloors" class="form-control" />
                                     <span asp-validation-for="HTotalFloors" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+	                                <label asp-for="HLatitude" class="control-label">緯度</label>
+	                                <input asp-for="HLatitude" class="form-control" />
+	                                <span asp-validation-for="HLatitude" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+	                                <label asp-for="HLongitude" class="control-label">經度</label>
+	                                <input asp-for="HLongitude" class="form-control" />
+	                                <span asp-validation-for="HLongitude" class="text-danger"></span>
                                 </div>
 
                                 <div class="form-group mb-3">
@@ -293,15 +317,7 @@
 
                                     </div>
 
-                                    <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" id="HWaterHeater" name="features.HWaterHeater" @(features?.HWaterHeater == true ? "checked" : "") />
-                                        <label class="form-check-label" for="HWaterHeater">熱水器</label>
-                                    </div>
-
-                                    <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" id="HGasStove" name="features.HGasStove" @(features?.HGasStove == true ? "checked" : "") />
-                                        <label class="form-check-label" for="HGasStove">瓦斯爐</label>
-                                    </div>
+                                    
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-check mb-3">
@@ -350,20 +366,28 @@
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" id="HPublicEquipment" name="features.HPublicEquipment" @(features?.HPublicEquipment == true ? "checked" : "") />
-                                        <label class="form-check-label" for="HPublicEquipment">公共設備</label>
+	                                    <input type="checkbox" class="form-check-input" id="HPublicEquipment" name="features.HPublicEquipment" @(features?.HPublicEquipment == true ? "checked" : "") />
+	                                    <label class="form-check-label" for="HPublicEquipment">公共設備</label>
+                                    </div>
+                                    <div class="form-check mb-3">
+	                                    <input type="checkbox" class="form-check-input" id="HWaterHeater" name="features.HWaterHeater" @(features?.HWaterHeater == true ? "checked" : "") />
+	                                    <label class="form-check-label" for="HWaterHeater">熱水器</label>
                                     </div>
 
                                     <div class="form-check mb-3">
-                                        <input type="checkbox" class="form-check-input" name="HPublicEquipment" @(features?.HPublicEquipment == true ? "checked" : "") />
-                                        <label class="form-check-label">公共設備</label>
+	                                    <input type="checkbox" class="form-check-input" id="HGasStove" name="features.HGasStove" @(features?.HGasStove == true ? "checked" : "") />
+	                                    <label class="form-check-label" for="HGasStove">瓦斯爐</label>
                                     </div>
                                 </div>
                             }
                         </div>
                     </div>
                 </div>
-
+                <div class="mt-3">
+	                <label class="form-label">上傳新照片</label>
+	                <input type="file" class="form-control" name="images" multiple accept="image/*" onchange="previewImages(this)">
+	                <div id="imagePreview" class="row mt-3"></div>
+                </div>
                 <div class="card mt-3">
                     <div class="card-header">
                         <h3 class="card-title">房源照片</h3>
@@ -400,16 +424,8 @@
                                 </div>
                             }
                         </div>
-                        <div class="mt-3">
-                            <label class="form-label">上傳新照片</label>
-                            <input type="file" class="form-control" name="images" multiple accept="image/*" onchange="previewImages(this)">
-                            <div id="imagePreview" class="row mt-3"></div>
-                        </div>
+                       
                     </div>
-                </div>
-
-                <div class="form-group mt-3">
-                    <input type="submit" value="儲存" class="btn btn-primary" />
                 </div>
             </form>
         </div>

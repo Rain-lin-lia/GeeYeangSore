@@ -32,7 +32,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.PropertyCheck
 
             var query = _context.HProperties
                 .Include(p => p.HLandlord)
-                .Where(p => p.HStatus == "未驗證");
+                .Where(p => p.HStatus == "未驗證" && (p.HIsDelete == null || p.HIsDelete == false));
 
             // 搜尋房源ID
             if (!string.IsNullOrEmpty(searchId))
@@ -111,30 +111,76 @@ namespace GeeYeangSore.Areas.Admin.Controllers.PropertyCheck
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var property = await _context.HProperties
-                .Include(p => p.HPropertyImages)
-                .FirstOrDefaultAsync(p => p.HPropertyId == id);
-
-            if (property != null)
+            try
             {
-                // 刪除相關的圖片檔案
-                foreach (var image in property.HPropertyImages)
+                // 開始交易
+                using (var transaction = await _context.Database.BeginTransactionAsync())
                 {
-                    if (!string.IsNullOrEmpty(image.HImageUrl))
+                    try
                     {
-                        var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "Property", Path.GetFileName(image.HImageUrl));
-                        if (System.IO.File.Exists(imagePath))
+                        // 獲取房源及其相關資料
+                        var property = await _context.HProperties
+                            .Include(p => p.HPropertyImages)
+                            .Include(p => p.HPropertyFeatures)
+                            .Include(p => p.HPropertyAudits)
+                            .FirstOrDefaultAsync(p => p.HPropertyId == id);
+
+                        if (property == null)
                         {
-                            System.IO.File.Delete(imagePath);
+                            return NotFound();
                         }
+
+                        // 1. 軟刪除房源圖片
+                        if (property.HPropertyImages != null && property.HPropertyImages.Any())
+                        {
+                            foreach (var image in property.HPropertyImages)
+                            {
+                                image.HIsDelete = true;
+                            }
+                            await _context.SaveChangesAsync();
+                        }
+
+                        // 2. 軟刪除房源特色
+                        if (property.HPropertyFeatures != null && property.HPropertyFeatures.Any())
+                        {
+                            foreach (var feature in property.HPropertyFeatures)
+                            {
+                                feature.HIsDelete = true;
+                            }
+                            await _context.SaveChangesAsync();
+                        }
+
+                        // 3. 軟刪除房源審核記錄
+                        if (property.HPropertyAudits != null && property.HPropertyAudits.Any())
+                        {
+                            foreach (var audit in property.HPropertyAudits)
+                            {
+                                audit.HIsDelete = true;
+                            }
+                            await _context.SaveChangesAsync();
+                        }
+
+                        // 4. 最後軟刪除房源本身
+                        property.HIsDelete = true;
+                        await _context.SaveChangesAsync();
+
+                        // 提交交易
+                        await transaction.CommitAsync();
+
+                        return RedirectToAction(nameof(Index));
+                    }
+                    catch (Exception ex)
+                    {
+                        // 回滾交易
+                        await transaction.RollbackAsync();
+                        return View("Error");
                     }
                 }
-
-                _context.HProperties.Remove(property);
-                await _context.SaveChangesAsync();
             }
-
-            return RedirectToAction(nameof(Index));
+            catch (Exception)
+            {
+                return View("Error");
+            }
         }
     }
 }

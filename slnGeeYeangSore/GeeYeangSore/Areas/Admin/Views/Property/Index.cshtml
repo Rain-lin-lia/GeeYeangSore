@@ -100,6 +100,19 @@
     .col-actions {
         width: 200px;
     }
+
+    .pagination .page-item.active .page-link {
+        background-color: #3CDDD2;
+        border-color: #3CDDD2;
+    }
+
+    .pagination .page-link {
+        color: #FFFFFF;
+    }
+
+    .pagination .page-link:hover {
+            color: #24B4A8;
+    }
 </style>
 
 <div class="container-fluid">
@@ -116,7 +129,20 @@
                     <form asp-action="Index" method="get" class="search-form">
                         <div class="row g-2 align-items-end">
                             <div class="col-md-3">
-                                
+                                <div class="form-group">
+                                    <label class="form-label">搜尋類型</label>
+                                    <select name="searchType" class="form-control form-control-sm">
+                                        <option value="all">全部</option>
+                                        <option value="id">房源ID</option>
+                                        <option value="title">標題</option>
+                                        <option value="address">地址</option>
+                                        <option value="city">城市</option>
+                                        <option value="district">區域</option>
+                                        <option value="landlord">房東</option>
+                                        <option value="type">類型</option>
+                                        <option value="rent">租金</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="col-md-7">
                                 <div class="form-group">
@@ -139,7 +165,11 @@
                             <thead>
                                 <tr>
                                     <th class="col-id">
-                                        @Html.ActionLink("房源ID", "Index", new { sortOrder = ViewData["IdSort"], searchString = ViewData["CurrentFilter"], searchType = ViewData["SearchType"] }, new { @class = "text-dark" })
+                                        @Html.ActionLink("房源ID", "Index", new { 
+                                            sortOrder = ViewData["IdSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
                                         @if (ViewData["CurrentSort"]?.ToString() == "id_desc")
                                         {
                                             <i class="fas fa-sort-down"></i>
@@ -150,7 +180,11 @@
                                         }
                                     </th>
                                     <th class="col-title">
-                                        @Html.ActionLink("標題", "Index", new { sortOrder = ViewData["TitleSort"], searchString = ViewData["CurrentFilter"], searchType = ViewData["SearchType"] }, new { @class = "text-dark" })
+                                        @Html.ActionLink("標題", "Index", new { 
+                                            sortOrder = ViewData["TitleSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
                                         @if (ViewData["CurrentSort"]?.ToString() == "title_desc")
                                         {
                                             <i class="fas fa-sort-down"></i>
@@ -161,7 +195,11 @@
                                         }
                                     </th>
                                     <th class="col-landlord">
-                                        @Html.ActionLink("房東", "Index", new { sortOrder = ViewData["LandlordSort"], searchString = ViewData["CurrentFilter"], searchType = ViewData["SearchType"] }, new { @class = "text-dark" })
+                                        @Html.ActionLink("房東", "Index", new { 
+                                            sortOrder = ViewData["LandlordSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
                                         @if (ViewData["CurrentSort"]?.ToString() == "landlord_desc")
                                         {
                                             <i class="fas fa-sort-down"></i>
@@ -172,7 +210,11 @@
                                         }
                                     </th>
                                     <th class="col-address">
-                                        @Html.ActionLink("地址", "Index", new { sortOrder = ViewData["AddressSort"], searchString = ViewData["CurrentFilter"], searchType = ViewData["SearchType"] }, new { @class = "text-dark" })
+                                        @Html.ActionLink("地址", "Index", new { 
+                                            sortOrder = ViewData["AddressSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
                                         @if (ViewData["CurrentSort"]?.ToString() == "address_desc")
                                         {
                                             <i class="fas fa-sort-down"></i>
@@ -183,7 +225,11 @@
                                         }
                                     </th>
                                     <th class="col-price">
-                                        @Html.ActionLink("租金", "Index", new { sortOrder = ViewData["PriceSort"], searchString = ViewData["CurrentFilter"], searchType = ViewData["SearchType"] }, new { @class = "text-dark" })
+                                        @Html.ActionLink("租金", "Index", new { 
+                                            sortOrder = ViewData["PriceSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
                                         @if (ViewData["CurrentSort"]?.ToString() == "price_desc")
                                         {
                                             <i class="fas fa-sort-down"></i>
@@ -194,7 +240,11 @@
                                         }
                                     </th>
                                     <th class="col-date">
-                                        @Html.ActionLink("發布日期", "Index", new { sortOrder = ViewData["DateSort"], searchString = ViewData["CurrentFilter"], searchType = ViewData["SearchType"] }, new { @class = "text-dark" })
+                                        @Html.ActionLink("發布日期", "Index", new { 
+                                            sortOrder = ViewData["DateSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
                                         @if (ViewData["CurrentSort"]?.ToString() == "date_desc")
                                         {
                                             <i class="fas fa-sort-down"></i>
@@ -237,7 +287,12 @@
                         </table>
                     </div>
                     <div class="d-flex justify-content-center mt-4">
-                        @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page, searchString = ViewData["CurrentFilter"], searchType = ViewData["SearchType"], sortOrder = ViewData["CurrentSort"] }),
+                        @Html.PagedListPager(Model, page => Url.Action("Index", new { 
+                            page = page, 
+                            searchString = ViewData["CurrentFilter"], 
+                            searchType = ViewData["SearchType"] ?? "all", 
+                            sortOrder = ViewData["CurrentSort"] 
+                        }),
                             new PagedListRenderOptions
                             {
                                 LiElementClasses = new string[] { "page-item" },
