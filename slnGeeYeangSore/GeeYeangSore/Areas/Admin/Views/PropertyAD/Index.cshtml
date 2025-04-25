@@ -1,0 +1,75 @@
+@model X.PagedList.IPagedList<GeeYeangSore.Models.HAd>
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using X.PagedList.Mvc.Core
+@{
+    ViewData["Title"] = "廣告管理";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>廣告管理</h2>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Create" class="btn btn-primary">新增廣告</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>廣告ID</th>
+                            <th>廣告標題</th>
+                            <th>房源</th>
+                            <th>房東</th>
+                            <th>開始日期</th>
+                            <th>結束日期</th>
+                            <th>狀態</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.HAdId</td>
+                                <td>@item.HAdName</td>
+                                <td>@item.HProperty?.HPropertyTitle</td>
+                                <td>@item.HLandlord?.HLandlordName</td>
+                                <td>@item.HStartDate?.ToString("yyyy-MM-dd")</td>
+                                <td>@item.HEndDate?.ToString("yyyy-MM-dd")</td>
+                                <td>@item.HStatus</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Details" asp-route-id="@item.HAdId" class="btn btn-info btn-sm">詳細</a>
+                                        <a asp-action="Edit" asp-route-id="@item.HAdId" class="btn btn-warning btn-sm">編輯</a>
+                                        <form asp-action="Delete" asp-route-id="@item.HAdId" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('確定要刪除此廣告嗎？')">刪除</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-center">
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }),
+                    new PagedListRenderOptions
+                    {
+                        LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" },
+                        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+                        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+                        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+                        DisplayLinkToNextPage = PagedListDisplayMode.Always
+                    })
+            </div>
+        </div>
+    </div>
+</div>

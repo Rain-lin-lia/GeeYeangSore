@@ -1,0 +1,159 @@
+@model GeeYeangSore.Models.HAd
+
+@{
+    ViewData["Title"] = "新增廣告";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>新增廣告</h2>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HAdName" class="control-label">廣告標題</label>
+                            <input asp-for="HAdName" class="form-control" />
+                            <span asp-validation-for="HAdName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HCategory" class="control-label">廣告類別</label>
+                            <input asp-for="HCategory" class="form-control" />
+                            <span asp-validation-for="HCategory" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HDescription" class="control-label">廣告內容</label>
+                            <textarea asp-for="HDescription" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="HDescription" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HAdTag" class="control-label">廣告標籤</label>
+                            <input asp-for="HAdTag" class="form-control" />
+                            <span asp-validation-for="HAdTag" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HPriority" class="control-label">優先級</label>
+                            <input asp-for="HPriority" class="form-control" type="number" />
+                            <span asp-validation-for="HPriority" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HTargetRegion" class="control-label">目標區域</label>
+                            <input asp-for="HTargetRegion" class="form-control" />
+                            <span asp-validation-for="HTargetRegion" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HAdPrice" class="control-label">廣告價格</label>
+                            <input asp-for="HAdPrice" class="form-control" type="number" step="0.01" />
+                            <span asp-validation-for="HAdPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HLinkUrl" class="control-label">連結網址</label>
+                            <input asp-for="HLinkUrl" class="form-control" type="url" />
+                            <span asp-validation-for="HLinkUrl" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HImageUrl" class="control-label">圖片網址</label>
+                            <input asp-for="HImageUrl" class="form-control" type="url" />
+                            <span asp-validation-for="HImageUrl" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HStatus" class="control-label">狀態</label>
+                            <select asp-for="HStatus" class="form-control">
+                                <option value="已驗證">已驗證</option>
+                                <option value="未驗證">未驗證</option>
+                                <option value="已下架">已下架</option>
+                            </select>
+                            <span asp-validation-for="HStatus" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HPropertyId" class="control-label">房源</label>
+                            <select asp-for="HPropertyId" class="form-control" asp-items="ViewBag.HPropertyId">
+                                <option value="">-- 請選擇房源 --</option>
+                            </select>
+                            <span asp-validation-for="HPropertyId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HLandlordId" class="control-label">房東</label>
+                            <select asp-for="HLandlordId" class="form-control" asp-items="ViewBag.HLandlordId">
+                                <option value="">-- 請選擇房東 --</option>
+                            </select>
+                            <span asp-validation-for="HLandlordId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HStartDate" class="control-label">開始日期</label>
+                            <input asp-for="HStartDate" class="form-control" type="date" />
+                            <span asp-validation-for="HStartDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HEndDate" class="control-label">結束日期</label>
+                            <input asp-for="HEndDate" class="form-control" type="date" />
+                            <span asp-validation-for="HEndDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group text-end">
+                    <input type="submit" value="新增" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
