@@ -77,20 +77,46 @@ namespace GeeYeangSore.Areas.Admin.Controllers.PropertyAD
             if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
                 return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
 
-            if (ModelState.IsValid)
+            try
             {
+                // 設置下拉選單資料
+                SetViewData(ad);
+
+                // 設置預設值
                 ad.HCreatedDate = DateTime.Now;
                 ad.HLastUpdated = DateTime.Now;
                 ad.HIsDelete = false;
                 
-                _context.Add(ad);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // 添加記錄
+                _context.HAds.Add(ad);
+                var result = await _context.SaveChangesAsync();
+                
+                if (result > 0)
+                {
+                    TempData["SuccessMessage"] = "廣告已成功新增！";
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    ModelState.AddModelError("", "無法保存廣告資料");
+                    return View(ad);
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in Create action: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                
+                ModelState.AddModelError("", $"新增廣告時發生錯誤：{ex.Message}");
+                SetViewData(ad);
+                return View(ad);
+            }
+        }
 
-            ViewData["HPropertyId"] = new SelectList(_context.HProperties.Where(p => p.HStatus == "已驗證"), "HPropertyId", "HPropertyTitle", ad.HPropertyId);
-            ViewData["HLandlordId"] = new SelectList(_context.HLandlords.Where(l => l.HStatus == "已驗證"), "HLandlordId", "HLandlordName", ad.HLandlordId);
-            return View(ad);
+        private void SetViewData(HAd ad)
+        {
+            ViewData["HPropertyId"] = new SelectList(_context.HProperties.Where(p => p.HStatus == "已驗證"), "HPropertyId", "HPropertyTitle", ad?.HPropertyId);
+            ViewData["HLandlordId"] = new SelectList(_context.HLandlords.Where(l => l.HStatus == "已驗證"), "HLandlordId", "HLandlordName", ad?.HLandlordId);
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -121,36 +147,22 @@ namespace GeeYeangSore.Areas.Admin.Controllers.PropertyAD
             if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
                 return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
 
-            if (id != ad.HAdId)
+            try
             {
-                return NotFound();
+                ad.HLastUpdated = DateTime.Now;
+                _context.Update(ad);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "廣告已成功更新！";
+                return RedirectToAction(nameof(Index));
             }
-
-            if (ModelState.IsValid)
+            catch (Exception ex)
             {
-                try
-                {
-                    ad.HLastUpdated = DateTime.Now;
-                    _context.Update(ad);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AdExists(ad.HAdId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                Console.WriteLine($"Error in Edit action: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                ModelState.AddModelError("", $"更新廣告時發生錯誤：{ex.Message}");
+                SetViewData(ad);
+                return View(ad);
             }
-
-            ViewData["HPropertyId"] = new SelectList(_context.HProperties.Where(p => p.HStatus == "已驗證"), "HPropertyId", "HPropertyTitle", ad.HPropertyId);
-            ViewData["HLandlordId"] = new SelectList(_context.HLandlords.Where(l => l.HStatus == "已驗證"), "HLandlordId", "HLandlordName", ad.HLandlordId);
-            return View(ad);
         }
 
         public async Task<IActionResult> Delete(int? id)
@@ -183,16 +195,26 @@ namespace GeeYeangSore.Areas.Admin.Controllers.PropertyAD
             if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
                 return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
 
-            var ad = await _context.HAds.FindAsync(id);
-            if (ad != null)
+            try
             {
-                ad.HIsDelete = true;
-                ad.HLastUpdated = DateTime.Now;
-                _context.Update(ad);
-                await _context.SaveChangesAsync();
+                var ad = await _context.HAds.FindAsync(id);
+                if (ad != null)
+                {
+                    ad.HIsDelete = true;
+                    ad.HLastUpdated = DateTime.Now;
+                    _context.Update(ad);
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "廣告已成功刪除！";
+                }
+                return RedirectToAction(nameof(Index));
             }
-
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in DeleteConfirmed action: {ex.Message}");
+                Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                TempData["ErrorMessage"] = $"刪除廣告時發生錯誤：{ex.Message}";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         private bool AdExists(int id)

@@ -16,7 +16,7 @@
 
     <div class="card">
         <div class="card-body">
-            <form asp-action="Create">
+            <form asp-action="Create" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 
                 <div class="row mb-3">
@@ -74,7 +74,7 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label asp-for="HAdPrice" class="control-label">廣告價格</label>
-                            <input asp-for="HAdPrice" class="form-control" type="number" step="0.01" />
+                            <input asp-for="HAdPrice" class="form-control" type="number" step="1" />
                             <span asp-validation-for="HAdPrice" class="text-danger"></span>
                         </div>
                     </div>
@@ -83,6 +83,23 @@
                             <label asp-for="HLinkUrl" class="control-label">連結網址</label>
                             <input asp-for="HLinkUrl" class="form-control" type="url" />
                             <span asp-validation-for="HLinkUrl" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HStartDate" class="control-label">開始日期</label>
+                            <input asp-for="HStartDate" class="form-control" type="date" />
+                            <span asp-validation-for="HStartDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="HEndDate" class="control-label">結束日期</label>
+                            <input asp-for="HEndDate" class="form-control" type="date" />
+                            <span asp-validation-for="HEndDate" class="text-danger"></span>
                         </div>
                     </div>
                 </div>
@@ -99,9 +116,10 @@
                         <div class="form-group">
                             <label asp-for="HStatus" class="control-label">狀態</label>
                             <select asp-for="HStatus" class="form-control">
-                                <option value="已驗證">已驗證</option>
-                                <option value="未驗證">未驗證</option>
-                                <option value="已下架">已下架</option>
+                                <option value="">-- 請選擇狀態 --</option>
+                                <option value="進行中">進行中</option>
+                                <option value="維護中">維護中</option>
+                                <option value="結束">結束</option>
                             </select>
                             <span asp-validation-for="HStatus" class="text-danger"></span>
                         </div>
@@ -129,25 +147,10 @@
                     </div>
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label asp-for="HStartDate" class="control-label">開始日期</label>
-                            <input asp-for="HStartDate" class="form-control" type="date" />
-                            <span asp-validation-for="HStartDate" class="text-danger"></span>
-                        </div>
+                <div class="row">
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary">新增廣告</button>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label asp-for="HEndDate" class="control-label">結束日期</label>
-                            <input asp-for="HEndDate" class="form-control" type="date" />
-                            <span asp-validation-for="HEndDate" class="text-danger"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group text-end">
-                    <input type="submit" value="新增" class="btn btn-primary" />
                 </div>
             </form>
         </div>
