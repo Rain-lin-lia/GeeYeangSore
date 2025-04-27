@@ -30,7 +30,10 @@ namespace GeeYeangSore.Areas.Admin.Controllers
             {
                 // 從資料庫抓取房源數（只計算已驗證的房源）
                 PropertyCount = _context.HProperties
-                    .Where(p => p.HStatus != "未驗證")
+                    .Include(p => p.HLandlord)
+                    .Where(p => p.HStatus == "已驗證" &&
+                                p.HLandlord.HStatus == "已驗證" &&
+                                (p.HIsDelete == null || p.HIsDelete == false))
                     .Count(),
 
                 // 從資料庫抓取新增用戶數（過去 30 天內註冊的用戶）
