@@ -1,0 +1,71 @@
+@model GeeYeangSore.Models.HAd
+
+@{
+    ViewData["Title"] = "廣告詳細資訊";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col">
+            <h2>廣告詳細資訊</h2>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+            <a asp-action="Edit" asp-route-id="@Model.HAdId" class="btn btn-warning">編輯</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-2">廣告ID</dt>
+                <dd class="col-sm-10">@Model.HAdId</dd>
+
+                <dt class="col-sm-2">廣告標題</dt>
+                <dd class="col-sm-10">@Model.HAdName</dd>
+
+                <dt class="col-sm-2">廣告內容</dt>
+                <dd class="col-sm-10">@Model.HDescription</dd>
+
+                <dt class="col-sm-2">廣告類別</dt>
+                <dd class="col-sm-10">@Model.HCategory</dd>
+
+                <dt class="col-sm-2">優先級</dt>
+                <dd class="col-sm-10">@Model.HPriority</dd>
+
+                <dt class="col-sm-2">廣告標籤</dt>
+                <dd class="col-sm-10">@Model.HAdTag</dd>
+
+                <dt class="col-sm-2">目標區域</dt>
+                <dd class="col-sm-10">@Model.HTargetRegion</dd>
+
+                <dt class="col-sm-2">廣告價格</dt>
+                <dd class="col-sm-10">@Model.HAdPrice?.ToString("C")</dd>
+
+                <dt class="col-sm-2">房源</dt>
+                <dd class="col-sm-10">@Model.HProperty?.HPropertyTitle</dd>
+
+                <dt class="col-sm-2">房東</dt>
+                <dd class="col-sm-10">@Model.HLandlord?.HLandlordName</dd>
+
+                <dt class="col-sm-2">開始日期</dt>
+                <dd class="col-sm-10">@Model.HStartDate?.ToString("yyyy-MM-dd")</dd>
+
+                <dt class="col-sm-2">結束日期</dt>
+                <dd class="col-sm-10">@Model.HEndDate?.ToString("yyyy-MM-dd")</dd>
+
+                <dt class="col-sm-2">狀態</dt>
+                <dd class="col-sm-10">@Model.HStatus</dd>
+
+                <dt class="col-sm-2">創建日期</dt>
+                <dd class="col-sm-10">@Model.HCreatedDate?.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+
+                <dt class="col-sm-2">最後更新</dt>
+                <dd class="col-sm-10">@Model.HLastUpdated?.ToString("yyyy-MM-dd HH:mm:ss")</dd>
+
+                <dt class="col-sm-2">是否刪除</dt>
+                <dd class="col-sm-10">@(Model.HIsDelete == true ? "是" : "否")</dd>
+            </dl>
+        </div>
+    </div>
+</div> 

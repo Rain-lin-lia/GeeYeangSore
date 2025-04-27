@@ -109,31 +109,34 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-4">房源ID</dt>
-                                <dd class="col-sm-8">@Model.HPropertyId</dd>
+	                        <dl class="row">
+		                        <dt class="col-sm-4">房東</dt>
+		                        <dd class="col-sm-8">@Model.HLandlord.HLandlordName</dd>
 
-                                <dt class="col-sm-4">標題</dt>
-                                <dd class="col-sm-8">@Model.HPropertyTitle</dd>
+		                        <dt class="col-sm-4">標題</dt>
+		                        <dd class="col-sm-8">@Model.HPropertyTitle</dd>
+								
+		                        <dt class="col-sm-4">租金</dt>
+		                        <dd class="col-sm-8">@Model.HRentPrice</dd>
 
-                                <dt class="col-sm-4">房東</dt>
-                                <dd class="col-sm-8">@Model.HLandlord.HLandlordName</dd>
+		                        <dt class="col-sm-4">地址</dt>
+		                        <dd class="col-sm-8">@Model.HAddress</dd>
 
-                                <dt class="col-sm-4">地址</dt>
-                                <dd class="col-sm-8">@Model.HAddress</dd>
+		                        <dt class="col-sm-4">城市</dt>
+		                        <dd class="col-sm-8">@Model.HCity</dd>
 
-                                <dt class="col-sm-4">城市</dt>
-                                <dd class="col-sm-8">@Model.HCity</dd>
+		                        <dt class="col-sm-4">區域</dt>
+		                        <dd class="col-sm-8">@Model.HDistrict</dd>
 
-                                <dt class="col-sm-4">區域</dt>
-                                <dd class="col-sm-8">@Model.HDistrict</dd>
+		                        <dt class="col-sm-4">郵遞區號</dt>
+		                        <dd class="col-sm-8">@Model.HZipcode</dd>
+								
+		                        <dt class="col-sm-4">描述</dt>
+		                        <dd class="col-sm-8">@Model.HDescription</dd>
 
-                                <dt class="col-sm-4">郵遞區號</dt>
-                                <dd class="col-sm-8">@Model.HZipcode</dd>
-
-                                <dt class="col-sm-4">租金</dt>
-                                <dd class="col-sm-8">@Model.HRentPrice</dd>
-                            </dl>
+                                <dt class="col-sm-4">可用狀態</dt>
+                                <dd class="col-sm-8">@Model.HAvailabilityStatus</dd>
+	                        </dl>
                         </div>
                         <div class="col-md-6">
                             <dl class="row">
@@ -154,6 +157,12 @@
 
                                 <dt class="col-sm-4">總樓層</dt>
                                 <dd class="col-sm-8">@Model.HTotalFloors</dd>
+
+                                <dt class="col-sm-4">經度</dt>
+                                <dd class="col-sm-8">@Model.HLongitude</dd>
+
+                                <dt class="col-sm-4">緯度</dt>
+                                <dd class="col-sm-8">@Model.HLatitude</dd>
 
                                 <dt class="col-sm-4">建築類型</dt>
                                 <dd class="col-sm-8">@Model.HBuildingType</dd>

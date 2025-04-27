@@ -53,9 +53,9 @@ public partial class HProperty
 
     public bool? HIsDelete { get; set; }
 
-    public decimal? HLatitude { get; set; }
+    public string? HLatitude { get; set; }
 
-    public decimal? HLongitude { get; set; }
+    public string? HLongitude { get; set; }
 
     public virtual ICollection<HAd> HAds { get; set; } = new List<HAd>();
 

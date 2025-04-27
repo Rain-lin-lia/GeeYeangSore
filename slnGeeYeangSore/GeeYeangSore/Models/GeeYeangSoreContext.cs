@@ -89,7 +89,7 @@ public partial class GeeYeangSoreContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=26.251.30.196;Initial Catalog=GeeYeangSore;User ID=admin01;Password=admin01;Encrypt=False;Trust Server Certificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=26.135.207.98;Initial Catalog=GeeYeangSore;User ID=admin01;Password=admin01;Encrypt=False;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -812,10 +812,10 @@ public partial class GeeYeangSoreContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("h_Last_Updated");
             entity.Property(e => e.HLatitude)
-                .HasColumnType("decimal(10, 8)")
+                .HasColumnType("nvarchar(50)")
                 .HasColumnName("h_Latitude");
             entity.Property(e => e.HLongitude)
-                .HasColumnType("decimal(10, 8)")
+                .HasColumnType("nvarchar(50)")
                 .HasColumnName("h_Longitude");
             entity.Property(e => e.HPropertyTitle)
                 .HasMaxLength(50)

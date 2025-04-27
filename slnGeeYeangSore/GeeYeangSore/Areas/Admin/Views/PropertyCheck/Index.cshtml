@@ -1,6 +1,7 @@
 @model IPagedList<GeeYeangSore.Models.HProperty>
 @using X.PagedList
 @using X.PagedList.Mvc.Core
+@using Microsoft.AspNetCore.Mvc.Rendering
 
 @{
     ViewData["Title"] = "房源審核";
@@ -12,84 +13,261 @@
         color: #222222;
         border: none;
     }
-    .btn-main:hover {
-        background-color: #24B4A8;
+
+        .btn-main:hover {
+            background-color: #24B4A8;
+            color: #222222;
+        }
+
+    .btn-warning {
+        background-color: #F0F9F8;
         color: #222222;
+        border: 1px solid #666666;
     }
-    .btn-success {
-        background-color: #28a745;
-        color: white;
-    }
-    .btn-success:hover {
-        background-color: #218838;
-        color: white;
-    }
+
+        .btn-warning:hover {
+            background-color: #666666;
+            color: #F0F9F8;
+        }
+
     .card {
         background-color: #F0F9F8;
     }
+
     .card-header {
         background-color: #3CDDD2 !important;
         color: #222222 !important;
     }
+
+    .form-control {
+        background-color: #F0F9F8;
+        color: #222222;
+        border: 1px solid #666666;
+    }
+
+        .form-control:focus {
+            background-color: #F0F9F8;
+            color: #222222;
+            border-color: #3CDDD2;
+            box-shadow: 0 0 0 0.25rem rgba(60, 221, 210, 0.25);
+        }
+
+    .form-label {
+        color: #222222;
+        margin-bottom: 0.25rem;
+    }
+
+    .search-btn {
+        background-color: #3CDDD2;
+        color: #222222;
+        border: none;
+        padding: 0.375rem 1rem;
+        height: 38px;
+    }
+
+        .search-btn:hover {
+            background-color: #24B4A8;
+            color: #222222;
+        }
+
+    .search-form {
+        max-width: 800px;
+        margin: 0 0 1rem 0;
+    }
+
+    .form-group {
+        margin-bottom: 0;
+    }
+    /* 添加固定寬度的表格樣式 */
     .table-fixed {
         table-layout: fixed;
         width: 100%;
     }
-    .table-fixed th,
-    .table-fixed td {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+
+        .table-fixed th,
+        .table-fixed td {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    /* 設置各列的固定寬度 */
+    .col-id {
+        width: 80px;
     }
-    .col-id { width: 80px; }
-    .col-title { width: 200px; }
-    .col-landlord { width: 120px; }
-    .col-address { width: 250px; }
-    .col-price { width: 100px; }
-    .col-date { width: 120px; }
-    .col-actions { width: 200px; }
+
+    .col-title {
+        width: 300px;
+    }
+
+    .col-landlord {
+        width: 100px;
+    }
+
+    .col-address {
+        width: 200px;
+    }
+
+    .col-price {
+        width: 100px;
+    }
+
+    .col-date {
+        width: 120px;
+    }
+
+    .col-actions {
+        width: 200px;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #3CDDD2;
+        border-color: #3CDDD2;
+    }
+
+    .pagination .page-link {
+        color: #000000;
+    }
+
+        .pagination .page-link:hover {
+            color: #24B4A8;
+        }
 </style>
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
+        <div class="col-lg-12">
             <div class="card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">待審核房源列表</h3>
                 </div>
                 <div class="card-body">
-                    <form method="get" class="mb-3">
-                        <div class="row">
-                            <div class="col-md-4">
+                    <form asp-action="Index" method="get" class="search-form">
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="searchId">房源ID</label>
-                                    <input type="text" class="form-control" id="searchId" name="searchId" value="@ViewBag.SearchId" placeholder="輸入房源ID">
+                                    <label class="form-label">搜尋類型</label>
+                                    <select name="searchType" class="form-control form-control-sm">
+                                        <option value="all">全部</option>
+                                        <option value="id">房源ID</option>
+                                        <option value="title">房源標題</option>
+                                        <option value="landlord">房東</option>
+                                        <option value="address">地址</option>
+                                        <option value="price">租金</option>
+                                        <option value="city">城市</option>
+                                        <option value="district">區域</option>
+                                    </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-7">
                                 <div class="form-group">
-                                    <label for="searchRent">租金</label>
-                                    <input type="text" class="form-control" id="searchRent" name="searchRent" value="@ViewBag.SearchRent" placeholder="輸入租金">
+                                    <label class="form-label">搜尋關鍵字</label>
+                                    <input type="text" name="searchString" class="form-control form-control-sm" value="@ViewData["CurrentFilter"]" placeholder="請輸入關鍵字..." />
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <button type="submit" class="btn btn-main form-control">搜尋</button>
+                                    <button type="submit" class="btn search-btn w-100">
+                                        <i class="fas fa-search"></i> 搜尋
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </form>
+
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped table-fixed">
                             <thead>
                                 <tr>
-                                    <th class="col-id">房源ID</th>
-                                    <th class="col-title">標題</th>
-                                    <th class="col-landlord">房東</th>
-                                    <th class="col-address">地址</th>
-                                    <th class="col-price">租金</th>
-                                    <th class="col-date">發布日期</th>
+                                    <th class="col-id">
+                                        @Html.ActionLink("房源ID", "Index", new { 
+                                            sortOrder = ViewData["IdSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
+                                        @if (ViewData["CurrentSort"]?.ToString() == "id_desc")
+                                        {
+                                            <i class="fas fa-sort-down"></i>
+                                        }
+                                        else if (ViewData["CurrentSort"]?.ToString() == "id")
+                                        {
+                                            <i class="fas fa-sort-up"></i>
+                                        }
+                                    </th>
+                                    <th class="col-title">
+                                        @Html.ActionLink("標題", "Index", new { 
+                                            sortOrder = ViewData["TitleSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
+                                        @if (ViewData["CurrentSort"]?.ToString() == "title_desc")
+                                        {
+                                            <i class="fas fa-sort-down"></i>
+                                        }
+                                        else if (ViewData["CurrentSort"]?.ToString() == "title")
+                                        {
+                                            <i class="fas fa-sort-up"></i>
+                                        }
+                                    </th>
+                                    <th class="col-landlord">
+                                        @Html.ActionLink("房東", "Index", new { 
+                                            sortOrder = ViewData["LandlordSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
+                                        @if (ViewData["CurrentSort"]?.ToString() == "landlord_desc")
+                                        {
+                                            <i class="fas fa-sort-down"></i>
+                                        }
+                                        else if (ViewData["CurrentSort"]?.ToString() == "landlord")
+                                        {
+                                            <i class="fas fa-sort-up"></i>
+                                        }
+                                    </th>
+                                    <th class="col-address">
+                                        @Html.ActionLink("地址", "Index", new { 
+                                            sortOrder = ViewData["AddressSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
+                                        @if (ViewData["CurrentSort"]?.ToString() == "address_desc")
+                                        {
+                                            <i class="fas fa-sort-down"></i>
+                                        }
+                                        else if (ViewData["CurrentSort"]?.ToString() == "address")
+                                        {
+                                            <i class="fas fa-sort-up"></i>
+                                        }
+                                    </th>
+                                    <th class="col-price">
+                                        @Html.ActionLink("租金", "Index", new { 
+                                            sortOrder = ViewData["PriceSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
+                                        @if (ViewData["CurrentSort"]?.ToString() == "price_desc")
+                                        {
+                                            <i class="fas fa-sort-down"></i>
+                                        }
+                                        else if (ViewData["CurrentSort"]?.ToString() == "price")
+                                        {
+                                            <i class="fas fa-sort-up"></i>
+                                        }
+                                    </th>
+                                    <th class="col-date">
+                                        @Html.ActionLink("發布日期", "Index", new { 
+                                            sortOrder = ViewData["DateSort"], 
+                                            searchString = ViewData["CurrentFilter"], 
+                                            searchType = ViewData["SearchType"] ?? "all" 
+                                        }, new { @class = "text-dark" })
+                                        @if (ViewData["CurrentSort"]?.ToString() == "date_desc")
+                                        {
+                                            <i class="fas fa-sort-down"></i>
+                                        }
+                                        else if (ViewData["CurrentSort"]?.ToString() == "date")
+                                        {
+                                            <i class="fas fa-sort-up"></i>
+                                        }
+                                    </th>
                                     <th class="col-actions">操作</th>
                                 </tr>
                             </thead>
@@ -104,23 +282,25 @@
                                         <td>@property.HRentPrice</td>
                                         <td>@property.HPublishedDate?.ToString("yyyy-MM-dd")</td>
                                         <td>
-                                            <a asp-action="Details" asp-route-id="@property.HPropertyId" class="btn btn-info btn-sm">
-                                                <i class="fas fa-eye"></i> 查看
-                                            </a>
-                                            <form asp-action="Approve" method="post" class="d-inline">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="id" value="@property.HPropertyId" />
-                                                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('確定要通過此房源嗎？')">
-                                                    <i class="fas fa-check"></i> 通過
-                                                </button>
-                                            </form>
-                                            <form asp-action="Delete" method="post" class="d-inline">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="id" value="@property.HPropertyId" />
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('確定要刪除此房源嗎？')">
-                                                    <i class="fas fa-trash"></i> 刪除
-                                                </button>
-                                            </form>
+                                            <div class="btn-group" role="group">
+                                                <a asp-action="Details" asp-route-id="@property.HPropertyId" class="btn btn-outline-success btn-sm">
+                                                    <i class="fas fa-eye"></i> 
+                                                </a>
+                                                <form asp-action="Approve" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@property.HPropertyId" />
+                                                    <button type="submit" class="btn btn-outline-primary btn-sm" onclick="return confirm('確定要通過此房源嗎？')">
+                                                        <i class="fas fa-check"></i> 
+                                                    </button>
+                                                </form>
+                                                <form asp-action="Delete" method="post" class="d-inline">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="id" value="@property.HPropertyId" />
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('確定要刪除此房源嗎？')">
+                                                        <i class="fas fa-trash"></i> 
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 }
@@ -128,7 +308,12 @@
                         </table>
                     </div>
                     <div class="d-flex justify-content-center mt-4">
-                        @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }),
+                        @Html.PagedListPager(Model, page => Url.Action("Index", new { 
+                            page = page, 
+                            searchString = ViewData["CurrentFilter"], 
+                            searchType = ViewData["SearchType"] ?? "all", 
+                            sortOrder = ViewData["CurrentSort"] 
+                        }),
                             new PagedListRenderOptions
                             {
                                 LiElementClasses = new string[] { "page-item" },

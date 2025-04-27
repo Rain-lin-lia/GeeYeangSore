@@ -64,7 +64,9 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Property
 
                 var properties = _context.HProperties
                     .Include(p => p.HLandlord)
-                    .Where(p => p.HStatus == "已驗證" && p.HLandlord.HStatus == "已驗證")  // 同時篩選已驗證的房源和房東
+                    .Include(p => p.HPropertyFeatures)
+                    .Include(p => p.HPropertyImages)
+                    .Where(p => p.HStatus == "已驗證" && p.HLandlord.HStatus == "已驗證" && (p.HIsDelete == null || p.HIsDelete == false))  // 只篩選已驗證的房源和已驗證的房東，且未被刪除
                     .AsQueryable();
 
                 if (!string.IsNullOrEmpty(searchString))
@@ -219,7 +221,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Property
                 return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
             try
             {
-                ViewData["HLandlordId"] = new SelectList(_context.HLandlords, "HLandlordId", "HLandlordName");
+                ViewData["HLandlordId"] = new SelectList(_context.HLandlords.Where(l => l.HStatus == "已驗證"), "HLandlordId", "HLandlordName");
                 return View();
             }
             catch (Exception ex)
@@ -277,6 +279,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Property
                 features.HLandlordShared = Request.Form["features.HLandlordShared"].ToString() == "on";
                 features.HBalcony = Request.Form["features.HBalcony"].ToString() == "on";
                 features.HPublicEquipment = Request.Form["features.HPublicEquipment"].ToString() == "on";
+                
 
                 // 驗證房東是否存在且已驗證
                 var landlord = await _context.HLandlords
@@ -285,7 +288,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Property
                 if (landlord == null)
                 {
                     ModelState.AddModelError("HLandlordId", "選擇的房東不存在");
-                    ViewData["HLandlordId"] = new SelectList(_context.HLandlords, "HLandlordId", "HLandlordName");
+                    ViewData["HLandlordId"] = new SelectList(_context.HLandlords.Where(l => l.HStatus == "已驗證"), "HLandlordId", "HLandlordName");
                     return View(property);
                 }
 
@@ -313,7 +316,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Property
                             HLandlordId = property.HLandlordId,
                             HAuditStatus = "已驗證",
                             HAuditDate = DateTime.Now,
-                            HAuditNotes = "新建立的房源，等待管理員審核"
+                            HAuditNotes = "已驗證"
                         };
                         _context.HPropertyAudits.Add(propertyAudit);
                         await _context.SaveChangesAsync();
@@ -380,7 +383,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Property
             }
 
             // 如果新增失敗，重新載入房東列表並返回視圖
-            ViewData["HLandlordId"] = new SelectList(_context.HLandlords, "HLandlordId", "HLandlordName", property.HLandlordId);
+            ViewData["HLandlordId"] = new SelectList(_context.HLandlords.Where(l => l.HStatus == "已驗證"), "HLandlordId", "HLandlordName", property.HLandlordId);
             return View(property);
         }
 
@@ -494,7 +497,6 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Property
                             // 處理 checkbox 值
                             try
                             {
-
                                 features.HAllowsAnimals = Request.Form["features.HAllowsAnimals"].ToString() == "on";
                                 features.HAllowsDogs = Request.Form["features.HAllowsDogs"].ToString() == "on";
                                 features.HAllowsCats = Request.Form["features.HAllowsCats"].ToString() == "on";
@@ -678,40 +680,38 @@ namespace GeeYeangSore.Areas.Admin.Controllers.Property
                             return NotFound();
                         }
 
-                        // 刪除房源審核記錄
+                        // 1. 軟刪除房源審核記錄
                         if (property.HPropertyAudits != null)
                         {
-                            _context.HPropertyAudits.RemoveRange(property.HPropertyAudits);
+                            foreach (var audit in property.HPropertyAudits)
+                            {
+                                audit.HIsDelete = true;
+                            }
+                            await _context.SaveChangesAsync();
                         }
 
-                        // 刪除房源特色
+                        // 2. 軟刪除房源特色
                         if (property.HPropertyFeatures != null)
                         {
-                            _context.HPropertyFeatures.RemoveRange(property.HPropertyFeatures);
+                            foreach (var feature in property.HPropertyFeatures)
+                            {
+                                feature.HIsDelete = true;
+                            }
+                            await _context.SaveChangesAsync();
                         }
 
-                        // 刪除房源圖片
+                        // 3. 軟刪除房源圖片
                         if (property.HPropertyImages != null)
                         {
-                            // 刪除實體圖片文件
                             foreach (var image in property.HPropertyImages)
                             {
-                                if (!string.IsNullOrEmpty(image.HImageUrl))
-                                {
-                                    string imagePath = Path.Combine(_webHostEnvironment.WebRootPath, image.HImageUrl.TrimStart('/'));
-                                    if (System.IO.File.Exists(imagePath))
-                                    {
-                                        System.IO.File.Delete(imagePath);
-                                    }
-                                }
+                                image.HIsDelete = true;
                             }
-                            _context.HPropertyImages.RemoveRange(property.HPropertyImages);
+                            await _context.SaveChangesAsync();
                         }
 
-                        // 刪除房源本身
-                        _context.HProperties.Remove(property);
-
-                        // 保存所有更改
+                        // 4. 最後軟刪除房源本身
+                        property.HIsDelete = true;
                         await _context.SaveChangesAsync();
 
                         // 提交交易

@@ -1,0 +1,235 @@
+@model GeeYeangSore.Models.HAd
+
+@{
+    ViewData["Title"] = "新增廣告";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>新增廣告</h2>
+        </div>
+        <div class="col text-end">
+            <a asp-action="Index" class="btn btn-secondary">返回列表</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                
+                <!-- 基本資訊 -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">基本資訊</h5>
+                    </div>
+                    <div class="card-body">
+	                    <div class="row">
+		                    <div class="col-md-6 mb-3">
+			                    <div class="form-group">
+				                    <label asp-for="HPropertyId" class="control-label">房源</label>
+				                    <select asp-for="HPropertyId" class="form-control" asp-items="ViewBag.HPropertyId">
+					                    <option value="">-- 請選擇房源 --</option>
+				                    </select>
+				                    <span asp-validation-for="HPropertyId" class="text-danger"></span>
+			                    </div>
+		                    </div>
+		                    <div class="col-md-6 mb-3">
+			                    <div class="form-group">
+				                    <label asp-for="HLandlordId" class="control-label">房東</label>
+				                    <select asp-for="HLandlordId" class="form-control" asp-items="ViewBag.HLandlordId">
+					                    <option value="">-- 請選擇房東 --</option>
+				                    </select>
+				                    <span asp-validation-for="HLandlordId" class="text-danger"></span>
+			                    </div>
+		                    </div>
+	                    </div>
+	                    <div class="row">
+		                    <div class="col-md-6 mb-3">
+			                    <div class="form-group">
+				                    <label asp-for="HAdName" class="control-label">廣告標題</label>
+				                    <input asp-for="HAdName" class="form-control" placeholder="請輸入廣告標題"/>
+				                    <span asp-validation-for="HAdName" class="text-danger"></span>
+			                    </div>
+		                    </div>
+		                    <div class="col-md-6 mb-3">
+			                    <div class="form-group">
+				                    <label asp-for="HCategory" class="control-label">廣告類別</label>
+				                    <select asp-for="HCategory" class="form-control" id="adCategory" onchange="updateAdPrice()">
+					                    <option value="">-- 請選擇廣告類別 --</option>
+					                    <option value="VIP1" data-price="100">VIP1 </option>
+					                    <option value="VIP2" data-price="200">VIP2 </option>
+					                    <option value="VIP3" data-price="300">VIP3 </option>
+				                    </select>
+				                    <span asp-validation-for="HCategory" class="text-danger"></span>
+			                    </div>
+		                    </div>
+	                    </div>
+
+	                    <div class="row">
+		                    <div class="col-md-12 mb-3">
+			                    <div class="form-group">
+				                    <label asp-for="HDescription" class="control-label">廣告內容</label>
+				                    <textarea asp-for="HDescription" class="form-control" rows="3" placeholder="請輸入廣告內容"></textarea>
+				                    <span asp-validation-for="HDescription" class="text-danger"></span>
+			                    </div>
+		                    </div>
+	                    </div>
+                    </div>
+                </div>
+
+                <!-- 廣告設定 -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">廣告設定</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="HAdTag" class="control-label">廣告標籤</label>
+                                    <select asp-for="HAdTag" class="form-control">
+                                        <option value="">-- 請選擇廣告標籤 --</option>
+                                        <option value="無">無</option>
+                                        <option value="精選">精選</option>
+                                        <option value="置頂">置頂</option>
+                                    </select>
+                                    <span asp-validation-for="HAdTag" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="HPriority" class="control-label">優先級</label>
+                                    <input asp-for="HPriority" class="form-control" type="number" placeholder="請輸入優先級" />
+                                    <span asp-validation-for="HPriority" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="HTargetRegion" class="control-label">目標區域</label>
+                                    <select asp-for="HTargetRegion" class="form-control">
+                                        <option value="">-- 請選擇目標區域 --</option>
+                                        <option value="台北市">台北市</option>
+                                        <option value="新北市">新北市</option>
+                                        <option value="桃園市">桃園市</option>
+                                        <option value="台中市">台中市</option>
+                                        <option value="台南市">台南市</option>
+                                        <option value="高雄市">高雄市</option>
+                                        <option value="基隆市">基隆市</option>
+                                        <option value="新竹市">新竹市</option>
+                                        <option value="嘉義市">嘉義市</option>
+                                        <option value="新竹縣">新竹縣</option>
+                                        <option value="苗栗縣">苗栗縣</option>
+                                        <option value="彰化縣">彰化縣</option>
+                                        <option value="南投縣">南投縣</option>
+                                        <option value="雲林縣">雲林縣</option>
+                                        <option value="嘉義縣">嘉義縣</option>
+                                        <option value="屏東縣">屏東縣</option>
+                                        <option value="宜蘭縣">宜蘭縣</option>
+                                        <option value="花蓮縣">花蓮縣</option>
+                                        <option value="台東縣">台東縣</option>
+                                        <option value="澎湖縣">澎湖縣</option>
+                                        <option value="金門縣">金門縣</option>
+                                        <option value="連江縣">連江縣</option>
+                                    </select>
+                                    <span asp-validation-for="HTargetRegion" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="HAdPrice" class="control-label">廣告價格</label>
+                                    <input asp-for="HAdPrice" class="form-control" type="number" step="any" pattern="\d*" id="adPrice" readonly />
+                                    <span asp-validation-for="HAdPrice" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 時間設定 -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">時間設定</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="HStartDate" class="control-label">開始日期</label>
+                                    <input asp-for="HStartDate" class="form-control" type="date" />
+                                    <span asp-validation-for="HStartDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="HEndDate" class="control-label">結束日期</label>
+                                    <input asp-for="HEndDate" class="form-control" type="date" />
+                                    <span asp-validation-for="HEndDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 連結與狀態 -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">廣告狀態</h5>
+                    </div>
+                    <div class="card-body">
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-group">
+                                    <label asp-for="HStatus" class="control-label">狀態</label>
+                                    <select asp-for="HStatus" class="form-control">
+                                        <option value="">-- 請選擇狀態 --</option>
+                                        <option value="進行中">進行中</option>
+                                        <option value="維護中">維護中</option>
+                                        <option value="結束">結束</option>
+                                    </select>
+                                    <span asp-validation-for="HStatus" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+                <!-- 提交按鈕 -->
+                <div class="row">
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary">新增廣告</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        function updateAdPrice() {
+            var categorySelect = document.getElementById('adCategory');
+            var priceInput = document.getElementById('adPrice');
+            var selectedOption = categorySelect.options[categorySelect.selectedIndex];
+            
+            if (selectedOption.value) {
+                priceInput.value = selectedOption.getAttribute('data-price');
+            } else {
+                priceInput.value = '';
+            }
+        }
+
+        // 初始化價格
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAdPrice();
+        });
+    </script>
+}
