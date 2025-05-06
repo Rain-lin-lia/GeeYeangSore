@@ -29,6 +29,15 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "GeeYeangSore", Version = "v1" });
+    c.DocInclusionPredicate((docName, apiDesc) =>
+        apiDesc.ActionDescriptor is Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor descriptor &&
+        descriptor.ControllerTypeInfo.Namespace != null &&
+        descriptor.ControllerTypeInfo.Namespace.StartsWith("GeeYeangSore.APIControllers"));
+});
 builder.Services.AddRazorPages();
 
 // 添加 Session 服務
@@ -45,6 +54,9 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
 }
 else
 {
@@ -78,7 +90,7 @@ app.MapControllerRoute(
     name: "nonarea",
     pattern: "{controller=Home}/{action=Index}/{id?}"
 );
-
+app.MapControllers();
 app.MapRazorPages();
 
 app.Run();

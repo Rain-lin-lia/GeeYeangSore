@@ -35,8 +35,6 @@ namespace GeeYeangSore.Areas.Admin.Controllers.News
             }
         }
 
-
-
         //https://localhost:7022/Admin/About/About
         public IActionResult About()
         {
@@ -134,7 +132,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.News
                     //如果沒有權限就會顯示NoPermission頁面
                     return RedirectToAction("NoPermission", "Home", new { area = "Admin" });
                 var about = _db.HAbouts.FirstOrDefault(item => item.HAboutId == HAboutId);
-                
+
                 if (about != null)
                 {
                     _db.Remove(about);
@@ -158,5 +156,5 @@ namespace GeeYeangSore.Areas.Admin.Controllers.News
         }
 
     }
-    
+
 }
