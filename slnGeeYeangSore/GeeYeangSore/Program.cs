@@ -8,10 +8,6 @@ using GeeYeangSore.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var backendName = Environment.GetEnvironmentVariable("BACKEND_NAME");
-var port = Environment.GetEnvironmentVariable("CUSTOM_PORT") ?? "7022";
-var vueOrigin = Environment.GetEnvironmentVariable("VUE_ORIGIN") ?? "http://localhost:5173";
-
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -50,7 +46,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowVueDevServer", policy =>
     {
-        policy.WithOrigins(vueOrigin, "http://localhost:5178", "http://localhost:5176", "http://localhost:5175", "http://localhost:5174")
+        policy.WithOrigins("http://localhost:9000","vue.jayceeswlrorobot.win")
                       .AllowAnyHeader()
                       .AllowAnyMethod()
                       .AllowCredentials();

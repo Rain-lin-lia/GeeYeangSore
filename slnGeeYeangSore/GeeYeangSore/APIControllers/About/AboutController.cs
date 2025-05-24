@@ -13,13 +13,13 @@ public class AboutController : BaseController
     public IActionResult GetNews()
     {
         var about = _db.HAbouts.ToList();
-        // 驗證登入與權限
-        var access = CheckAccess();
-        if (access != null) return access;
-
-        var tenant = GetCurrentTenant();
-        if (tenant == null)
-            return Unauthorized(new { success = false, message = "未登入" });
+        // // 驗證登入與權限
+        // var access = CheckAccess();
+        // if (access != null) return access;
+        //
+        // var tenant = GetCurrentTenant();
+        // if (tenant == null)
+        //     return Unauthorized(new { success = false, message = "未登入" });
 
 
         return Ok(new { response = about });
