@@ -4,13 +4,13 @@ using GeeYeangSore.Data;
 using GeeYeangSore.Models;
 using Microsoft.AspNetCore.Http;
 using GeeYeangSore.Hubs;
-using GeeYeangSore.Settings; 
+using GeeYeangSore.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+                       ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
@@ -23,12 +23,9 @@ builder.Services.AddDbContext<GeeYeangSoreContext>(options =>
 // 添加 IHttpContextAccessor 服務
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-{
-    options.SignIn.RequireConfirmedAccount = false;
-})
-.AddEntityFrameworkStores<ApplicationDbContext>()
-.AddDefaultTokenProviders();
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options => { options.SignIn.RequireConfirmedAccount = false; })
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
@@ -46,10 +43,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowVueDevServer", policy =>
     {
-        policy.WithOrigins("http://localhost:9000","vue.jayceeswlrorobot.win")
-                      .AllowAnyHeader()
-                      .AllowAnyMethod()
-                      .AllowCredentials();
+        policy.WithOrigins("http://localhost:9000", "https://vue.jayceeswlrorobot.win")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 // 添加 Session 服務
@@ -66,11 +63,9 @@ builder.Services.AddSignalR();
 
 //添加SMTP
 builder.Services.Configure<SmtpSettings>(
-builder.Configuration.GetSection("SmtpSettings"));
+    builder.Configuration.GetSection("SmtpSettings"));
 
 var app = builder.Build();
-
-
 
 
 // Configure the HTTP request pipeline.
@@ -79,7 +74,6 @@ if (app.Environment.IsDevelopment())
     app.UseMigrationsEndPoint();
     app.UseSwagger();
     app.UseSwaggerUI();
-
 }
 else
 {
