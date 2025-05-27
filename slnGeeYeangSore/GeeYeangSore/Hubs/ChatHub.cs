@@ -22,7 +22,7 @@ namespace GeeYeangSore.Hubs
         private HTenant? GetSessionUser()
         {
             var http = Context.GetHttpContext();
-            var email = http?.Session.GetString("SK_LOGINED_USER");
+            var email = http?.Session.GetString("SK_FRONT_LOGINED_USER");
             if (string.IsNullOrEmpty(email)) return null;
             return _db.HTenants.FirstOrDefault(t => t.HEmail == email && !t.HIsDeleted);
         }

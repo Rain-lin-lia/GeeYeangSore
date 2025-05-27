@@ -14,7 +14,10 @@ namespace GeeYeangSore.APIControllers.Favorite
         [HttpGet("me")]
         public IActionResult GetMyFavorites()
         {
-            var tenantId = HttpContext.Session.GetInt32("TenantId");
+            try
+            {
+
+                var tenantId = HttpContext.Session.GetInt32("TenantId");
             if (tenantId == null)
                 return Unauthorized(new { message = "尚未登入" });
 
@@ -40,11 +43,18 @@ namespace GeeYeangSore.APIControllers.Favorite
                 .ToList();
 
             return Ok(list);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { success = false, message = "系統錯誤，請稍後再試。" });
+            }
         }
 
         [HttpPost("add")]
         public IActionResult AddFavorite([FromBody] FavoriteDTO dto)
         {
+            try     
+            { 
             var tenantId = HttpContext.Session.GetInt32("TenantId");
             if (tenantId == null)
                 return Unauthorized();
@@ -62,11 +72,18 @@ namespace GeeYeangSore.APIControllers.Favorite
             _db.SaveChanges();
 
             return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { success = false, message = "系統錯誤，請稍後再試。" });
+            }
         }
 
         [HttpPost("remove")]
         public IActionResult RemoveFavorite([FromBody] RemoveFavoriteDTO dto)
         {
+            try
+            { 
             var tenantId = HttpContext.Session.GetInt32("TenantId");
             if (tenantId == null)
                 return Unauthorized();
@@ -83,17 +100,28 @@ namespace GeeYeangSore.APIControllers.Favorite
             _db.SaveChanges();
 
             return Ok(new { success = true, message = "已取消收藏" });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { success = false, message = "系統錯誤，請稍後再試。" });
+            }
         }
 
         [HttpGet("list/{tenantId}")]
         public IActionResult GetFavorites(int tenantId)
         {
+            try { 
             var list = _db.HFavorites
                 .Where(f => f.HTenantId == tenantId)
                 .Select(f => f.HPropertyId)
                 .ToList();
 
             return Ok(list);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { success = false, message = "系統錯誤，請稍後再試。" });
+            }
         }
     }
 }

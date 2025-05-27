@@ -32,6 +32,7 @@ namespace GeeYeangSore.APIControllers.Session
             context.Session.SetString(CDictionary.SK_FRONT_LOGINED_TYPE, "Tenant");
             context.Session.SetString("FrontLoginTime", DateTimeOffset.UtcNow.ToString("o"));
             context.Session.SetInt32("FrontTenantId", tenant.HTenantId);
+            context.Session.SetInt32("TenantId", tenant.HTenantId);
         }
 
         public static bool IsFrontLoggedIn(HttpContext context)
@@ -46,6 +47,7 @@ namespace GeeYeangSore.APIControllers.Session
             context.Session.Remove(CDictionary.SK_FRONT_LOGINED_TYPE);
             context.Session.Remove("FrontLoginTime");
             context.Session.Remove("FrontTenantId");
+            context.Session.Remove("TenantId");
         }
     }
 }

@@ -765,7 +765,8 @@ namespace GeeYeangSore.APIControllers.Landlord
                 using (var client = new HttpClient())
                 {
                     // 準備提示詞
-                    var prompt = $"請為以下房屋生成一段吸引人的描述文案：\n" +
+                    var prompt = $"直接給我一段以下房屋生成一段吸引人的描述文案：\n" +
+                                 $"不用給我備註跟說明直接給我文案就好，也不需要說要附上什麼照片，然後在幫我加上EMOJI\n" +
                                  $"標題：{dto.Title}\n" +
                                  $"地點：{dto.City}{dto.District}\n" +
                                  $"請以專業且吸引人的方式描述這個房屋的特色和優點。";
@@ -773,38 +774,44 @@ namespace GeeYeangSore.APIControllers.Landlord
                     // 準備請求內容
                     var requestData = new
                     {
-                        model = "llama3.2",
-                        prompt = prompt,
-                        stream = false
+                        model = "gemma3:4b",
+                        messages = new[]
+                        {
+                            new
+                            {
+                                role = "user",
+                                content = prompt
+                            }
+                        },
+                        max_tokens = 500
                     };
 
                     // 設定請求標頭
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
 
-                    // 直接使用完整 URL 發送請求
+                    // 發送請求到新的API端點
                     var jsonContent = JsonConvert.SerializeObject(requestData);
                     var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
 
-                    _logger.LogInformation($"Sending request to Ollama API with data: {jsonContent}");
+                    _logger.LogInformation($"Sending request to LLM API with data: {jsonContent}");
 
-                    // 區域網路API端點
-                    var response = await client.PostAsync("http://26.135.207.98:11434/api/generate", content);
-                    var responseString = await response.Content.ReadAsStringAsync(); // 修改變數名稱以避免衝突
+                    var response = await client.PostAsync("http://llm.jayceeswlrorobot.win/v1/chat/completions", content);
+                    var responseString = await response.Content.ReadAsStringAsync();
 
-                    _logger.LogInformation($"Received response from Ollama API: {responseString}");
+                    _logger.LogInformation($"Received response from LLM API: {responseString}");
 
                     if (response.IsSuccessStatusCode)
                     {
                         var json = JObject.Parse(responseString);
-                        var generated = json["response"]?.ToString();
+                        var generated = json["choices"]?[0]?["message"]?["content"]?.ToString();
                         if (!string.IsNullOrEmpty(generated))
                         {
                             return Ok(new { success = true, description = generated.Trim() });
                         }
                         else
                         {
-                            _logger.LogError($"無效的 Ollama 回應: {responseString}");
+                            _logger.LogError($"無效的 LLM API 回應: {responseString}");
                             return BadRequest(new { success = false, message = "生成文案失敗：無效的回應" });
                         }
                     }
@@ -816,7 +823,6 @@ namespace GeeYeangSore.APIControllers.Landlord
                 return BadRequest(new { success = false, message = "生成文案失敗：" + ex.Message });
             }
 
-            // 確保所有程式碼路徑都有傳回值
             return BadRequest(new { success = false, message = "生成文案失敗：未知錯誤" });
         }
 
@@ -825,6 +831,93 @@ namespace GeeYeangSore.APIControllers.Landlord
             public string Title { get; set; }
             public string City { get; set; }
             public string District { get; set; }
+        }
+
+        public class MarketAnalysisDto
+        {
+            public string City { get; set; }
+            public string District { get; set; }
+            public string PropertyType { get; set; }
+            public int? Area { get; set; }
+            public int? RoomCount { get; set; }
+            public decimal? RentPrice { get; set; }
+        }
+
+        [HttpPost("market-analysis")]
+        public async Task<IActionResult> GenerateMarketAnalysis([FromBody] MarketAnalysisDto dto)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    // 準備提示詞
+                    var prompt = 
+                                $"地點：{dto.City}{dto.District}\n" +
+                                $"房屋類型：{dto.PropertyType}\n" +
+                                $"面積：{dto.Area}坪\n" +
+                                $"房型：{dto.RoomCount}房\n" +
+                                $"租金：{dto.RentPrice}元/月" +
+                                "\n\n請提供以下分析：\n" +
+                                "1. 該區域近期租金趨勢\n" +
+                                "2. 市場供需狀況\n" +
+                                "3. 熱門設施需求\n" +
+                                "4. 租客偏好分析\n" +
+                                "5. 租金合理性分析\n" +
+                                "請以專業且客觀的角度分析，直接說明就好。加上Emoji";
+
+                    // 準備請求內容
+                    var requestData = new
+                    {
+                        model = "gemma3:4b",
+                        messages = new[]
+                        {
+                            new
+                            {
+                                role = "user",
+                                content = prompt
+                            }
+                        },
+                        max_tokens = 1000
+                    };
+
+                    // 設定請求標頭
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                    // 發送請求到 LLM API
+                    var jsonContent = JsonConvert.SerializeObject(requestData);
+                    var content = new StringContent(jsonContent, System.Text.Encoding.UTF8, "application/json");
+
+                    _logger.LogInformation($"Sending market analysis request to LLM API with data: {jsonContent}");
+
+                    var response = await client.PostAsync("http://llm.jayceeswlrorobot.win/v1/chat/completions", content);
+                    var responseString = await response.Content.ReadAsStringAsync();
+
+                    _logger.LogInformation($"Received response from LLM API: {responseString}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var json = JObject.Parse(responseString);
+                        var analysis = json["choices"]?[0]?["message"]?["content"]?.ToString();
+                        if (!string.IsNullOrEmpty(analysis))
+                        {
+                            return Ok(new { success = true, analysis = analysis.Trim() });
+                        }
+                        else
+                        {
+                            _logger.LogError($"無效的 LLM API 回應: {responseString}");
+                            return BadRequest(new { success = false, message = "生成市場分析失敗：無效的回應" });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "生成市場分析時發生錯誤");
+                return BadRequest(new { success = false, message = "生成市場分析失敗：" + ex.Message });
+            }
+
+            return BadRequest(new { success = false, message = "生成市場分析失敗：未知錯誤" });
         }
 
         public class OllamaResponse
