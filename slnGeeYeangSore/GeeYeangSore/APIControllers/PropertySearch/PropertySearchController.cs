@@ -141,10 +141,8 @@ namespace GeeYeangSore.APIControllers.PropertySearch
                         name = t.HUserName,
                         phone = t.HPhoneNumber,
                         email = t.HEmail,
-                        avatar = string.IsNullOrEmpty(t.HImages)
-                            ? "https://localhost:7022/images/User/default.png"
-                            : "https://localhost:7022/images/User/" + t.HImages
-                    },
+                        avatar = string.IsNullOrEmpty(t.HImages) ? null : t.HImages
+                },
                     property = new
                     {
                         propertyId = p.HPropertyId,
@@ -428,17 +426,54 @@ namespace GeeYeangSore.APIControllers.PropertySearch
                     .ToList(),
                 landlord = new
                 {
-                    id = property.HLandlord.HLandlordId,
-                    name = property.HLandlord.HTenant.HUserName,
-                    phone = property.HLandlord.HTenant.HPhoneNumber,
-                    email = property.HLandlord.HTenant.HEmail,
-                    avatar = string.IsNullOrEmpty(property.HLandlord.HTenant.HImages)
-                        ? "https://localhost:7022/images/User/default.png"
-                        : "https://localhost:7022/images/User/" + property.HLandlord.HTenant.HImages
-                }
-            };
 
-            return Ok(result);
+                    property = new
+                    {
+                        propertyId = property.HPropertyId,
+                        title = property.HPropertyTitle,
+                        description = property.HDescription,
+                        address = property.HAddress,
+                        city = property.HCity,
+                        district = property.HDistrict,
+                        zipcode = property.HZipcode,
+                        rentPrice = property.HRentPrice,
+                        propertyType = property.HPropertyType,
+                        roomCount = property.HRoomCount,
+                        bathroomCount = property.HBathroomCount,
+                        area = property.HArea,
+                        floor = property.HFloor,
+                        totalFloors = property.HTotalFloors,
+                        buildingType = property.HBuildingType,
+                        publishedDate = property.HPublishedDate,
+                        features = features,
+                        badgeType = badgeType
+                    },
+                    images = property.HPropertyImages
+                        .Where(i => i.HIsDelete == false)
+                        .OrderBy(i => i.HUploadedDate)
+                        .Select(i => "https://localhost:7022" + i.HImageUrl)
+                        .ToList(),
+                        landlord = new
+                        {
+                            id = property.HLandlord.HLandlordId,
+                            name = property.HLandlord.HTenant.HUserName,
+                            phone = property.HLandlord.HTenant.HPhoneNumber,
+                            email = property.HLandlord.HTenant.HEmail,
+                            avatar = string.IsNullOrWhiteSpace(property.HLandlord.HTenant.HImages) ||
+                                     property.HLandlord.HTenant.HImages.Contains("/") ||
+                                     property.HLandlord.HTenant.HImages.Contains("http")
+                                ? null
+                                : property.HLandlord.HTenant.HImages
+            }
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "系統錯誤，請稍後再試。" });
+            }
+
         }
 
         [HttpGet("recommendedProperties")]

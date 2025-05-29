@@ -23,65 +23,7 @@ namespace GeeYeangSore.APIControllers.Commerce
             _ngrokBaseUrl = config["NgrokBaseUrl"];
         }
 
-        // [HttpPost("create-ad")]
-        // public IActionResult CreateAd([FromBody] GeeYeangSore.DTO.Commerce.CreateAdRequest vm)
-        // {
-        //     // 步驟0：權限檢查（必須為已驗證房東）
-        //     var access = CheckAccess(requireLandlord: true); // 含登入 + 黑名單 + 房東身份
-        //     if (access != null) return access;
-
-        //     // 步驟1：取得目前登入的租客（房東）
-        //     var tenant = GetCurrentTenant();
-        //     if (tenant == null)
-        //         return Unauthorized(new { success = false, message = "未登入" });
-
-        //     // 步驟2：確認租客是否已通過房東驗證
-        //     if (tenant.HIsLandlord != true)
-        //         return Unauthorized(new { success = false, message = "尚未通過房東驗證" });
-
-        //     // 步驟3：取得房東資料（抓 landlordId）
-        //     var landlord = _db.HLandlords.FirstOrDefault(l => l.HTenantId == tenant.HTenantId && !l.HIsDeleted);
-        //     if (landlord == null)
-        //         return Unauthorized(new { success = false, message = "房東身份不存在" });
-
-        //     // 步驟4：撈出廣告方案資料
-        //     var plan = _db.HAdPlans.FirstOrDefault(p => p.HPlanId == vm.PlanId);
-        //     if (plan == null)
-        //         return BadRequest(new { success = false, message = "找不到指定的廣告方案" });
-
-        //     // 步驟5：組成廣告資料物件
-        //     var now = DateTime.Now;
-        //     var ad = new HAd
-        //     {
-        //         HLandlordId = landlord.HLandlordId,
-        //         HPropertyId = vm.PropertyId,
-        //         HAdName = vm.AdName,
-        //         HCategory = plan.HCategory,
-        //         HPlanId = plan.HPlanId,
-        //         HAdPrice = plan.HAdPrice,
-        //         HStartDate = now,
-        //         HEndDate = now.AddDays(plan.HDays),
-        //         HStatus = "進行中",
-        //         HPriority = plan.HPlanId,
-        //         HAdTag = vm.AdTag,
-        //         HTargetRegion = vm.TargetRegion,
-        //         HLinkUrl = vm.LinkURL,
-        //         HImageUrl = vm.ImageURL,
-        //         HCreatedDate = now,
-        //         HLastUpdated = now,
-        //         HIsDelete = false
-        //     };
-
-        //     // 步驟6：將廣告資料寫入資料庫
-        //     _db.HAds.Add(ad);
-        //     _db.SaveChanges();
-
-        //     // 步驟7：回傳成功訊息與新廣告ID
-        //     return Ok(new { success = true, adId = ad.HAdId });
-        // }
-
-
-        // 步驟2：根據方案ID回傳金額及名稱
+        // 根據方案ID回傳金額及名稱
         [HttpGet("plan-info/{planId}")]
         public IActionResult GetPlanInfo(int planId)
         {
@@ -337,7 +279,7 @@ namespace GeeYeangSore.APIControllers.Commerce
                     ad.HLastUpdated = now;
                 }
 
-                // ✅ 明確告知 EF 這筆資料需要更新
+                //  明確告知 EF 這筆資料需要更新
                 _db.Entry(ad).State = EntityState.Modified;
 
                 // Step 4: 建立交易紀錄
@@ -409,22 +351,22 @@ namespace GeeYeangSore.APIControllers.Commerce
             int? planDays = null;
 
             // 若有關聯到廣告，再查出方案天數
-                if (tx.HAdId.HasValue)
-                {
-                    planDays = (from ad in _db.HAds
-                                join plan in _db.HAdPlans on ad.HPlanId equals plan.HPlanId
-                                where ad.HAdId == tx.HAdId.Value
-                                select plan.HDays).FirstOrDefault();
-                }
-                return Ok(new
-                {
-                    success = tx.HRtnMsg == "付款成功",
-                    orderId = tx.HMerchantTradeNo,
-                    itemName = tx.HItemName,
-                    amount = tx.HAmount,
-                    days = planDays ?? 0,
-                    paymentDate = tx.HPaymentDate?.ToString("yyyy-MM-dd HH:mm")
-                });
+            if (tx.HAdId.HasValue)
+            {
+                planDays = (from ad in _db.HAds
+                            join plan in _db.HAdPlans on ad.HPlanId equals plan.HPlanId
+                            where ad.HAdId == tx.HAdId.Value
+                            select plan.HDays).FirstOrDefault();
             }
+            return Ok(new
+            {
+                success = tx.HRtnMsg == "付款成功",
+                orderId = tx.HMerchantTradeNo,
+                itemName = tx.HItemName,
+                amount = tx.HAmount,
+                days = planDays ?? 0,
+                paymentDate = tx.HPaymentDate?.ToString("yyyy-MM-dd HH:mm")
+            });
         }
-  }
+    }
+}
