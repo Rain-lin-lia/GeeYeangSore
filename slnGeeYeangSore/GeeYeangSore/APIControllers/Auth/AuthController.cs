@@ -36,7 +36,7 @@ namespace GeeYeangSore.APIControllers.Auth
                 if (!await VerifyRecaptchaAsync(vm.RecaptchaToken))
                 {
                     // 規避reCAPTCHA 驗證失敗
-                    // return Unauthorized(new { success = false, message = "reCAPTCHA 驗證失敗" });
+                    return Unauthorized(new { success = false, message = "reCAPTCHA 驗證失敗" });
                 }
 
                 var tenant = _db.HTenants.FirstOrDefault(t => t.HEmail == vm.txtAccount && !t.HIsDeleted);
