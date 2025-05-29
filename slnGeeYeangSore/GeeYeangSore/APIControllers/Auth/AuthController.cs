@@ -33,11 +33,11 @@ namespace GeeYeangSore.APIControllers.Auth
                 if (string.IsNullOrEmpty(vm.RecaptchaToken))
                     return BadRequest(new { success = false, message = "reCAPTCHA token 缺失" });
 
-                if (!await VerifyRecaptchaAsync(vm.RecaptchaToken))
-                {
-                    // 規避reCAPTCHA 驗證失敗
-                    return Unauthorized(new { success = false, message = "reCAPTCHA 驗證失敗" });
-                }
+                // if (!await VerifyRecaptchaAsync(vm.RecaptchaToken))
+                // {
+                //     // 規避reCAPTCHA 驗證失敗
+                //     return Unauthorized(new { success = false, message = "reCAPTCHA 驗證失敗" });
+                // }
 
                 var tenant = _db.HTenants.FirstOrDefault(t => t.HEmail == vm.txtAccount && !t.HIsDeleted);
                 if (tenant == null)
