@@ -384,9 +384,9 @@ namespace GeeYeangSore.APIControllers.PropertySearch
                     .OrderByDescending(ad => ad.HCreatedDate)
                     .FirstOrDefault();
 
-                var badgeType = ad != null
-                            ? (ad.HCategory == "VIP3" ? "精選" : (ad.HCategory == "VIP2" ? "推薦" : null))
-                            : (property.HPublishedDate >= DateTime.Now.AddDays(-7) ? "New" : null);
+                var badgeType = (ad != null && (ad.HCategory == "VIP2" || ad.HCategory == "VIP3"))
+                    ? (ad.HCategory == "VIP3" ? "精選" : "推薦")
+    :               (property.HPublishedDate >= DateTime.Now.AddDays(-7) ? "New" : null);
 
                 var feature = property.HPropertyFeatures.FirstOrDefault(f => f.HIsDelete == false);
                 if (feature == null)
@@ -520,7 +520,9 @@ namespace GeeYeangSore.APIControllers.PropertySearch
                                     .Select(i => "https://localhost:7022" + i.HImageUrl)
                                     .FirstOrDefault() ?? "https://localhost:7022/images/Property/1.jpg",
                                 badgeType = adMap.ContainsKey(p.HPropertyId)
-                                    ? (adMap[p.HPropertyId] == "VIP3" ? "精選" : "推薦")
+                                    ? (adMap[p.HPropertyId] == "VIP3" ? "精選" :
+                                       adMap[p.HPropertyId] == "VIP2" ? "推薦" :
+                                       null)
                                     : (p.HPublishedDate >= weekAgo ? "New" : null)
                             })
                             .OrderBy(p => Guid.NewGuid())

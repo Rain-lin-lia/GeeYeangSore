@@ -17,28 +17,42 @@ public class GuideController : ControllerBase
     [HttpGet("guide")]
     public IActionResult GetGuideData()
     {
-        var data = _db.HGuides.ToList();
-
-        foreach (var item in data)
+        try
         {
-            if (!string.IsNullOrEmpty(item.HImagePath))
+            var data = _db.HGuides.ToList();
+
+            foreach (var item in data)
             {
-                var filePath = Path.Combine(_webHostEnvironment.WebRootPath, item.HImagePath.TrimStart('/'));
-                if (System.IO.File.Exists(filePath))
+                if (!string.IsNullOrEmpty(item.HImagePath))
                 {
-                    var imageBytes = System.IO.File.ReadAllBytes(filePath);
-                    item.HImagePath = Convert.ToBase64String(imageBytes);
+                    var filePath = Path.Combine(_webHostEnvironment.WebRootPath, item.HImagePath.TrimStart('/'));
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        var imageBytes = System.IO.File.ReadAllBytes(filePath);
+                        item.HImagePath = Convert.ToBase64String(imageBytes);
+                    }
                 }
             }
-        }
 
-        return Ok(new { response = data });
+            return Ok(new { response = data });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "處理請求時發生錯誤" });
+        }
     }
+
     [HttpGet]
     public IActionResult GetGuideImage()
     {
-        var data = _db.HGuides.ToList();
-
-        return Ok(new { response = data });
+        try
+        {
+            var data = _db.HGuides.ToList();
+            return Ok(new { response = data });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "處理請求時發生錯誤" });
+        }
     }
 }

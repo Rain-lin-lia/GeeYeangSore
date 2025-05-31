@@ -182,8 +182,10 @@ namespace GeeYeangSore.Areas.Admin.Controllers.UserManagement
                     existingLandlord.HBankAccount = updatedLandlord.HBankAccount ?? "";
                     existingLandlord.HIdCardFrontUrl = updatedLandlord.HIdCardFrontUrl ?? "";
                     existingLandlord.HIdCardBackUrl = updatedLandlord.HIdCardBackUrl ?? "";
-
                     existingLandlord.HUpdateAt = DateTime.Now;  // 更新修改時間
+
+                    // 根據房東狀態更新 HTenant 的 HIsLandlord 欄位
+                    existing.HIsLandlord = updatedLandlord.HStatus == "已驗證";
 
                     _context.HLandlords.Update(existingLandlord);
                 }

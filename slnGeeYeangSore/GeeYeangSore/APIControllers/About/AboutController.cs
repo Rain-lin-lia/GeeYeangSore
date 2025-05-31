@@ -12,17 +12,22 @@ public class AboutController : BaseController
     [HttpGet("about")]
     public IActionResult GetNews()
     {
-        var about = _db.HAbouts.ToList();
-        // // 驗證登入與權限
-        // var access = CheckAccess();
-        // if (access != null) return access;
-        //
-        // var tenant = GetCurrentTenant();
-        // if (tenant == null)
-        //     return Unauthorized(new { success = false, message = "未登入" });
+        try
+        {
+            var about = _db.HAbouts.ToList();
+            // // 驗證登入與權限
+            // var access = CheckAccess();
+            // if (access != null) return access;
+            //
+            // var tenant = GetCurrentTenant();
+            // if (tenant == null)
+            //     return Unauthorized(new { success = false, message = "未登入" });
 
-
-        return Ok(new { response = about });
+            return Ok(new { response = about });
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, new { message = "處理請求時發生錯誤" });
+        }
     }
-
 }

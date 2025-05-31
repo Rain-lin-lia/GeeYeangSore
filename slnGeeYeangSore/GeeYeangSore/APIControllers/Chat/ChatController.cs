@@ -49,22 +49,25 @@ namespace GeeYeangSore.APIControllers.Chat
                     .Distinct()
                     .ToList();
 
-                // Step 4：查聯絡人名稱
-                var contactNames = await _db.HTenants
+                // Step 4：查聯絡人名稱與頭像
+                var contactInfos = await _db.HTenants
                     .Where(t => contactIds.Contains(t.HTenantId))
-                    .ToDictionaryAsync(t => t.HTenantId, t => t.HUserName);
+                    .ToDictionaryAsync(
+                        t => t.HTenantId,
+                        t => new { t.HUserName, t.HImages }
+                    );
 
                 // Step 5：組合回傳資料
                 var result = latestMessages.Select(m =>
                 {
                     var targetId = m.HSenderId == userId ? m.HReceiverId : m.HSenderId;
+                    var info = contactInfos.ContainsKey(targetId ?? 0) ? contactInfos[targetId ?? 0] : null;
                     return new
                     {
                         m.HMessageId,
                         HSenderId = targetId,
-                        SenderName = contactNames.ContainsKey(targetId ?? 0)
-                            ? contactNames[targetId ?? 0]
-                            : $"聯絡人{targetId}",
+                        SenderName = info?.HUserName ?? $"聯絡人{targetId}",
+                        Avatar = info?.HImages,
                         m.HContent,
                         m.HTimestamp
                     };
@@ -262,5 +265,29 @@ namespace GeeYeangSore.APIControllers.Chat
                 return StatusCode(500, new { success = false, message = "檢舉失敗", error = ex.Message });
             }
         }
+
+        // [HttpGet("avatar/{tenantId}")]
+        // public async Task<IActionResult> GetTenantAvatar(int tenantId)
+        // {
+        //     try
+        //     {
+        //         var access = CheckAccess();
+        //         if (access != null) return access;
+
+        //         var tenant = await _db.HTenants
+        //             .Where(t => t.HTenantId == tenantId && !t.HIsDeleted)
+        //             .Select(t => new { tenantId = t.HTenantId, avatar = t.HImages })
+        //             .FirstOrDefaultAsync();
+
+        //         if (tenant == null)
+        //             return NotFound(new { success = false, message = "找不到此用戶" });
+
+        //         return Ok(new { success = true, data = tenant });
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         return StatusCode(500, new { success = false, message = "伺服器發生錯誤", error = ex.Message });
+        //     }
+        // }
     }
 }
