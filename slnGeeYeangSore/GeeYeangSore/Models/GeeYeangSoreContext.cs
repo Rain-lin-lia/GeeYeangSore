@@ -31,6 +31,8 @@ public partial class GeeYeangSoreContext : DbContext
 
     public virtual DbSet<HAd> HAds { get; set; }
 
+    public virtual DbSet<HAdPlan> HAdPlans { get; set; }
+
     public virtual DbSet<HAdmin> HAdmins { get; set; }
 
     public virtual DbSet<HAdminLog> HAdminLogs { get; set; }
@@ -40,6 +42,8 @@ public partial class GeeYeangSoreContext : DbContext
     public virtual DbSet<HChat> HChats { get; set; }
 
     public virtual DbSet<HContact> HContacts { get; set; }
+
+    public virtual DbSet<HEmailToken> HEmailTokens { get; set; }
 
     public virtual DbSet<HFavorite> HFavorites { get; set; }
 
@@ -82,6 +86,8 @@ public partial class GeeYeangSoreContext : DbContext
     public virtual DbSet<HReportForum> HReportForums { get; set; }
 
     public virtual DbSet<HRevenueReport> HRevenueReports { get; set; }
+
+    public virtual DbSet<HSso> HSsos { get; set; }
 
     public virtual DbSet<HTenant> HTenants { get; set; }
 
@@ -215,6 +221,7 @@ public partial class GeeYeangSoreContext : DbContext
             entity.Property(e => e.HLinkUrl)
                 .HasMaxLength(250)
                 .HasColumnName("h_LinkURL");
+            entity.Property(e => e.HPlanId).HasColumnName("h_PlanId");
             entity.Property(e => e.HPriority).HasColumnName("h_Priority");
             entity.Property(e => e.HPropertyId).HasColumnName("h_Property_Id");
             entity.Property(e => e.HStartDate)
@@ -232,10 +239,31 @@ public partial class GeeYeangSoreContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_h_Ad_Landlord");
 
+            entity.HasOne(d => d.HPlan).WithMany(p => p.HAds)
+                .HasForeignKey(d => d.HPlanId)
+                .HasConstraintName("FK_h_Ad_h_AdPlan");
+
             entity.HasOne(d => d.HProperty).WithMany(p => p.HAds)
                 .HasForeignKey(d => d.HPropertyId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_h_Ad_Property");
+        });
+
+        modelBuilder.Entity<HAdPlan>(entity =>
+        {
+            entity.HasKey(e => e.HPlanId);
+
+            entity.ToTable("h_AdPlan");
+
+            entity.Property(e => e.HPlanId).HasColumnName("h_PlanId");
+            entity.Property(e => e.HAdPrice).HasColumnName("h_AdPrice");
+            entity.Property(e => e.HCategory)
+                .HasMaxLength(50)
+                .HasColumnName("h_Category");
+            entity.Property(e => e.HDays).HasColumnName("h_Days");
+            entity.Property(e => e.HName)
+                .HasMaxLength(50)
+                .HasColumnName("h_Name");
         });
 
         modelBuilder.Entity<HAdmin>(entity =>
@@ -297,9 +325,7 @@ public partial class GeeYeangSoreContext : DbContext
 
         modelBuilder.Entity<HAudit>(entity =>
         {
-            entity
-                //.HasNoKey();
-                .ToTable("h_Audit");
+            entity.ToTable("h_Audit");
 
             entity.Property(e => e.HAuditId).HasColumnName("h_Audit_Id");
             entity.Property(e => e.HBankAccount)
@@ -389,6 +415,41 @@ public partial class GeeYeangSoreContext : DbContext
             entity.HasOne(d => d.HAdmin).WithMany(p => p.HContacts)
                 .HasForeignKey(d => d.HAdminId)
                 .HasConstraintName("FK_h_Contact_h_Admin");
+        });
+
+        modelBuilder.Entity<HEmailToken>(entity =>
+        {
+            entity.HasKey(e => e.HEmailTokenId).HasName("PK__h_EmailT__1F9832157C7A52B6");
+
+            entity.ToTable("h_EmailToken");
+
+            entity.Property(e => e.HEmailTokenId).HasColumnName("h_EmailToken_Id");
+            entity.Property(e => e.HCreatedAt)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("h_CreatedAt");
+            entity.Property(e => e.HEmailSalt)
+                .HasMaxLength(100)
+                .HasColumnName("h_EmailSalt");
+            entity.Property(e => e.HEmailToken1)
+                .HasMaxLength(100)
+                .HasColumnName("h_EmailToken");
+            entity.Property(e => e.HIsUsed).HasColumnName("h_IsUsed");
+            entity.Property(e => e.HRequestIp)
+                .HasMaxLength(50)
+                .HasColumnName("h_RequestIP");
+            entity.Property(e => e.HResetExpiresAt)
+                .HasColumnType("datetime")
+                .HasColumnName("h_ResetExpiresAt");
+            entity.Property(e => e.HTokenType)
+                .HasMaxLength(50)
+                .HasColumnName("h_TokenType");
+            entity.Property(e => e.HUsedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("h_UsedAt");
+            entity.Property(e => e.HUserEmail)
+                .HasMaxLength(100)
+                .HasColumnName("h_UserEmail");
         });
 
         modelBuilder.Entity<HFavorite>(entity =>
@@ -631,6 +692,10 @@ public partial class GeeYeangSoreContext : DbContext
                 .HasForeignKey(d => d.HChatId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_h_Messages_h_Chats");
+
+            entity.HasOne(d => d.HProperty).WithMany(p => p.HMessages)
+                .HasForeignKey(d => d.HPropertyId)
+                .HasConstraintName("FK_h_Messages_Property");
         });
 
         modelBuilder.Entity<HNews>(entity =>
@@ -979,6 +1044,16 @@ public partial class GeeYeangSoreContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("h_TargetType");
             entity.Property(e => e.HTenantId).HasColumnName("h_Tenant_Id");
+
+            entity.HasOne(d => d.HTarget).WithMany(p => p.HReactions)
+                .HasForeignKey(d => d.HTargetId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_h_Reaction_Target");
+
+            entity.HasOne(d => d.HTenant).WithMany(p => p.HReactions)
+                .HasForeignKey(d => d.HTenantId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_h_Reaction_Tenant");
         });
 
         modelBuilder.Entity<HReply>(entity =>
@@ -1050,6 +1125,10 @@ public partial class GeeYeangSoreContext : DbContext
                 .HasForeignKey(d => d.HMessageId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_h_Reports_h_Messages");
+
+            entity.HasOne(d => d.HReportedUser).WithMany(p => p.HReports)
+                .HasForeignKey(d => d.HReportedUserId)
+                .HasConstraintName("FK_h_Report_ReportedUser");
         });
 
         modelBuilder.Entity<HReportForum>(entity =>
@@ -1121,21 +1200,50 @@ public partial class GeeYeangSoreContext : DbContext
             entity.Property(e => e.HTotalTransactions).HasColumnName("h_TotalTransactions");
         });
 
+        modelBuilder.Entity<HSso>(entity =>
+        {
+            entity.HasKey(e => e.HSsoId).HasName("PK__h_SSO__078BAF04ADB3B06C");
+
+            entity.ToTable("h_SSO");
+
+            entity.HasIndex(e => e.HUserEmail, "UQ__h_SSO__D5BFBB2AC3E6485E").IsUnique();
+
+            entity.Property(e => e.HSsoId).HasColumnName("h_SSO_Id");
+            entity.Property(e => e.HAud)
+                .HasMaxLength(255)
+                .HasColumnName("h_aud");
+            entity.Property(e => e.HEmailverified).HasColumnName("h_emailverified");
+            entity.Property(e => e.HExp)
+                .HasColumnType("datetime")
+                .HasColumnName("h_exp");
+            entity.Property(e => e.HIat)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("h_iat");
+            entity.Property(e => e.HSub)
+                .HasMaxLength(255)
+                .HasColumnName("h_sub");
+            entity.Property(e => e.HTenantId).HasColumnName("h_Tenant_Id");
+            entity.Property(e => e.HUserEmail)
+                .HasMaxLength(100)
+                .HasColumnName("h_userEmail");
+
+            entity.HasOne(d => d.HTenant).WithMany(p => p.HSsos)
+                .HasForeignKey(d => d.HTenantId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_h_SSO_Tenant");
+        });
+
         modelBuilder.Entity<HTenant>(entity =>
         {
             entity.HasKey(e => e.HTenantId).HasName("PK__h_Tenant__3A0E244A59911E86");
 
             entity.ToTable("h_Tenant");
 
-            entity.HasIndex(e => e.HPhoneNumber, "UQ__h_Tenant__3C4DCC869F9331DD").IsUnique();
-
             entity.HasIndex(e => e.HEmail, "UQ__h_Tenant__C26FFCAEC1BC3BC8").IsUnique();
 
             entity.Property(e => e.HTenantId).HasColumnName("h_Tenant_Id");
             entity.Property(e => e.HAddress).HasColumnName("h_Address");
-            entity.Property(e => e.HAuthProvider)
-                .HasMaxLength(50)
-                .HasColumnName("h_AuthProvider");
             entity.Property(e => e.HBirthday)
                 .HasColumnType("datetime")
                 .HasColumnName("h_Birthday");
@@ -1146,9 +1254,6 @@ public partial class GeeYeangSoreContext : DbContext
             entity.Property(e => e.HEmail)
                 .HasMaxLength(255)
                 .HasColumnName("h_Email");
-            entity.Property(e => e.HEmailToken)
-                .HasMaxLength(100)
-                .HasColumnName("h_EmailToken");
             entity.Property(e => e.HGender).HasColumnName("h_Gender");
             entity.Property(e => e.HImages).HasColumnName("h_Images");
             entity.Property(e => e.HIsDeleted).HasColumnName("h_IsDeleted");
@@ -1160,6 +1265,9 @@ public partial class GeeYeangSoreContext : DbContext
             entity.Property(e => e.HLastLoginIp)
                 .HasMaxLength(50)
                 .HasColumnName("h_LastLoginIP");
+            entity.Property(e => e.HLockoutEnd)
+                .HasColumnType("datetime")
+                .HasColumnName("h_LockoutEnd");
             entity.Property(e => e.HLoginFailCount).HasColumnName("h_LoginFailCount");
             entity.Property(e => e.HPassword)
                 .HasMaxLength(255)
@@ -1167,9 +1275,6 @@ public partial class GeeYeangSoreContext : DbContext
             entity.Property(e => e.HPhoneNumber)
                 .HasMaxLength(50)
                 .HasColumnName("h_PhoneNumber");
-            entity.Property(e => e.HProviderId)
-                .HasMaxLength(255)
-                .HasColumnName("h_ProviderId");
             entity.Property(e => e.HSalt)
                 .HasMaxLength(100)
                 .HasColumnName("h_Salt");

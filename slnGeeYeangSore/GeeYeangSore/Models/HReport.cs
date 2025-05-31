@@ -34,4 +34,6 @@ public partial class HReport
     public virtual HAdmin? HAdmin { get; set; }
 
     public virtual HMessage? HMessage { get; set; }
+
+    public virtual HTenant? HReportedUser { get; set; }
 }

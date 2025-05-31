@@ -34,11 +34,13 @@
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">生日</label>
-                    <input type="date" class="form-control" name="HBirthday" value="@Model.HBirthday.ToString("yyyy-MM-dd")" max="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    <input type="date" class="form-control" name="HBirthday"
+                        value="@(Model.HBirthday.HasValue? Model.HBirthday.Value.ToString("yyyy-MM-dd") : "")"
+                        max="@DateTime.Now.ToString("yyyy-MM-dd")" />
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">性別</label>
-                    <select class="form-select" name="HGender" required>
+                    <select class="form-select" name="HGender">
                         <option value="true" selected="@(Model.HGender == true)">男</option>
                         <option value="false" selected="@(Model.HGender == false)">女</option>
                     </select>
@@ -55,7 +57,8 @@
                 <div class="col-md-4">
                     <label class="form-label">密碼</label>
                     <div class="input-group">
-                        <input type="password" class="form-control" name="HPassword" id="edit-password-field" placeholder="@(string.IsNullOrEmpty(Model.HSalt) ? "請輸入密碼" : "請輸入新密碼")" />
+                        <input type="password" class="form-control" name="HPassword" id="edit-password-field"
+                            placeholder="@(string.IsNullOrEmpty(Model.HSalt) ? "請輸入密碼" : "請輸入新密碼")" />
                         <span class="input-group-text" style="cursor: pointer;" onclick="toggleEditPassword()">
                             <i class="fa-solid fa-eye" id="edit-password-toggle-icon"></i>
                         </span>
@@ -68,21 +71,20 @@
 
                 <div class="col-md-12">
                     <label class="form-label">居住地</label>
-                    <input class="form-control" name="HAddress" value="@Model.HAddress" required />
+                    <input class="form-control" name="HAddress" value="@Model.HAddress" />
                 </div>
 
                 <div class="col-md-6 d-flex flex-column">
                     <label class="form-label">房客照片</label>
-                    <img id="tenantPhotoPreview"
-                         src="/images/User/@Model.HImages"
-                         class="img-fluid border mb-2"
-                         style="width: 150px; height: 150px; object-fit: cover;"
-                         onerror="this.src='/images/default.png'" />
+                    <img id="tenantPhotoPreview" src="/images/User/@Model.HImages" class="img-fluid border mb-2"
+                        style="width: 150px; height: 150px; object-fit: cover;"
+                        onerror="this.src='/images/default.png'" />
                     <input type="hidden" name="HImages" id="HImages" value="@Model.HImages" />
                 </div>
                 <div class="col-md-6 d-flex align-items-end justify-content-end">
                     <input type="file" class="form-control d-none" id="uploadTenantPhotoInput" />
-                    <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('uploadTenantPhotoInput').click()">修改照片</button>
+                    <button type="button" class="btn btn-outline-secondary"
+                        onclick="document.getElementById('uploadTenantPhotoInput').click()">修改照片</button>
                 </div>
             </div>
         </div>
@@ -96,11 +98,11 @@
                 <div class="card-body row g-3">
                     <div class="col-md-4">
                         <label class="form-label">房東本名</label>
-                        <input class="form-control" name="HLandlordName" value="@landlord.HLandlordName" />
+                        <input class="form-control" name="HLandlords[0].HLandlordName" value="@landlord.HLandlordName" />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">身份狀態</label>
-                        <select class="form-select" name="HLandlordStatus">
+                        <select class="form-select" name="HLandlords[0].HStatus">
                             <option value="未驗證" selected="@(landlord.HStatus == "未驗證")">未驗證</option>
                             <option value="驗證中" selected="@(landlord.HStatus == "驗證中")">驗證中</option>
                             <option value="已驗證" selected="@(landlord.HStatus == "已驗證")">已驗證</option>
@@ -113,28 +115,36 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">銀行名稱</label>
-                        <input class="form-control" name="HBankName" value="@landlord.HBankName" />
+                        <input class="form-control" name="HLandlords[0].HBankName" value="@landlord.HBankName" />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">銀行帳戶</label>
-                        <input class="form-control" name="HBankAccount" value="@landlord.HBankAccount" />
+                        <input class="form-control" name="HLandlords[0].HBankAccount" value="@landlord.HBankAccount" />
                     </div>
 
                     <!-- 身份證圖片上傳 -->
                     <div class="row g-3 border-top pt-3 mt-3">
                         <div class="col-md-6">
                             <label class="form-label">身份證正面</label>
-                            <img id="idCardFrontPreview" src="/images/User/@landlord.HIdCardFrontUrl" class="img-fluid border mb-2" style="max-height: 200px;" onerror="this.src='/images/default.png'" />
-                            <input type="hidden" name="HLandlords[0].HIdCardFrontUrl" id="HIdCardFrontUrl" value="@landlord.HIdCardFrontUrl" />
+                            <img id="idCardFrontPreview" src="/images/User/@landlord.HIdCardFrontUrl"
+                                class="img-fluid border mb-2" style="max-height: 200px;"
+                                onerror="this.src='/images/default.png'" />
+                            <input type="hidden" name="HLandlords[0].HIdCardFrontUrl" id="HIdCardFrontUrl"
+                                value="@landlord.HIdCardFrontUrl" />
                             <input type="file" class="form-control d-none" id="uploadIdCardFrontInput" />
-                            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('uploadIdCardFrontInput').click()">上傳正面</button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                onclick="document.getElementById('uploadIdCardFrontInput').click()">上傳正面</button>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">身份證反面</label>
-                            <img id="idCardBackPreview" src="/images/User/@landlord.HIdCardBackUrl" class="img-fluid border mb-2" style="max-height: 200px;" onerror="this.src='/images/default.png'" />
-                            <input type="hidden" name="HLandlords[0].HIdCardBackUrl" id="HIdCardBackUrl" value="@landlord.HIdCardBackUrl" />
+                            <img id="idCardBackPreview" src="/images/User/@landlord.HIdCardBackUrl"
+                                class="img-fluid border mb-2" style="max-height: 200px;"
+                                onerror="this.src='/images/default.png'" />
+                            <input type="hidden" name="HLandlords[0].HIdCardBackUrl" id="HIdCardBackUrl"
+                                value="@landlord.HIdCardBackUrl" />
                             <input type="file" class="form-control d-none" id="uploadIdCardBackInput" />
-                            <button type="button" class="btn btn-outline-secondary" onclick="document.getElementById('uploadIdCardBackInput').click()">上傳反面</button>
+                            <button type="button" class="btn btn-outline-secondary"
+                                onclick="document.getElementById('uploadIdCardBackInput').click()">上傳反面</button>
                         </div>
                     </div>
                 </div>
@@ -146,4 +156,3 @@
         </div>
     </div>
 </form>
-

@@ -13,7 +13,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.DataAnalysis
     [Route("[area]/[controller]/[action]")]
     public class DataAnalysisController : SuperController
     {
-       
+
         private readonly GeeYeangSoreContext _context;
 
         public DataAnalysisController(GeeYeangSoreContext context)
@@ -40,27 +40,31 @@ namespace GeeYeangSore.Areas.Admin.Controllers.DataAnalysis
                         .Where(p => p.HPublishedDate.HasValue)
                         .Where(p => p.HPublishedDate.Value.Year == year)
                         .GroupBy(p => p.HPublishedDate.Value.Month)
+                        .Where(g => g.Key != null)
+                        .Select(g => new { MonthKey = g.Key, PropertyCount = g.Count() })
                         .ToList()
                         .Select(g => new MonthlyPropertyData
                         {
-                            Month = $"{year}-{g.Key:D2}",
-                            PropertyCount = g.Count()
+                            Month = $"{year}-{g.MonthKey:D2}",
+                            PropertyCount = g.PropertyCount
                         })
                         .OrderBy(m => m.Month)
                         .ToList(),
-    
+
                     // 可選年份
                     SelectedYear = year,
                     PropertyAvailableYears = _context.HProperties
                                             .Where(p => p.HPublishedDate.HasValue)
                                             .Select(p => p.HPublishedDate.Value.Year)
+                                            .Where(y => y > 2000)
                                             .Distinct()
                                             .OrderByDescending(y => y)
                                             .ToList(),
-    
+
                     RevenueAvailableYears = _context.HTransactions
                                             .Where(t => t.HPaymentDate.HasValue)
                                             .Select(t => t.HPaymentDate.Value.Year)
+                                            .Where(y => y > 2000)
                                             .Distinct()
                                             .OrderByDescending(y => y)
                                             .ToList()
@@ -80,14 +84,14 @@ namespace GeeYeangSore.Areas.Admin.Controllers.DataAnalysis
                          ad.HStartDate.Value.Year == year &&
                          ad.HStartDate.Value.Month == month &&
                          ad.HIsDelete != true &&
-                         ad.HStatus == "進行中") 
+                         ad.HStatus == "進行中")
                     .Count();
 
                 dataAnalysis.CurrentMonthRevenue = _context.HTransactions
                     .Where(t => t.HPaymentDate.HasValue &&
                     t.HPaymentDate.Value.Year == year &&
                     t.HPaymentDate.Value.Month == month &&
-                    t.HTradeStatus == "Success") 
+                    t.HTradeStatus == "Success")
                     .Sum(t => t.HAmount ?? 0);
 
                 dataAnalysis.CurrentMonthUsers = _context.HLandlords
@@ -105,30 +109,38 @@ namespace GeeYeangSore.Areas.Admin.Controllers.DataAnalysis
                     .Where(r => r.HReportDate.HasValue && r.HReportDate.Value.Year == year)
                     .Sum(r => r.HTotalIncome ?? 0);
 
-
                 dataAnalysis.TotalLandlords = _context.HLandlords.Count();
                 dataAnalysis.TotalTenants = _context.HTenants.Count();
 
-                dataAnalysis.VipCategoryDistribution = _context.HAds
+                // VIP廣告分布
+                var vipCategoryGroups = _context.HAds
                     .Where(ad =>
                         (ad.HCategory == "VIP1" || ad.HCategory == "VIP2" || ad.HCategory == "VIP3") &&
-                        ad.HIsDelete != true && ad.HStatus == "進行中")
+                        ad.HIsDelete != true && ad.HStatus == "進行中" && ad.HCategory != null)
                     .GroupBy(ad => ad.HCategory)
-                    .ToDictionary(g => g.Key, g => g.Count());
+                    .Where(g => g.Key != null)
+                    .Select(g => new { Category = g.Key, Count = g.Count() })
+                    .ToList();
+                dataAnalysis.VipCategoryDistribution = vipCategoryGroups
+                    .ToDictionary(g => g.Category!, g => g.Count);
 
                 // 地區柱狀圖
-                dataAnalysis.PropertiesByCity = _context.HProperties
-                    .Where(p => p.HDistrict != null)
+                var cityGroups = _context.HProperties
+                    .Where(p => p.HDistrict != null && !string.IsNullOrEmpty(p.HCity))
                     .GroupBy(p => p.HCity ?? "Unknown")
-                    .ToDictionary(g => g.Key, g => g.Count());
+                    .Where(g => !string.IsNullOrEmpty(g.Key))
+                    .Select(g => new { City = g.Key, Count = g.Count() })
+                    .ToList();
+                dataAnalysis.PropertiesByCity = cityGroups.ToDictionary(g => g.City!, g => g.Count);
 
                 // 收益折線圖
-                dataAnalysis.MonthlyRevenueData = _context.HTransactions
+                var monthlyRevenueGroups = _context.HTransactions
                     .Where(t => t.HPaymentDate.HasValue &&
                                 t.HPaymentDate.Value.Year == year &&
                                 t.HTradeStatus == "Success")
                     .ToList()
                     .GroupBy(t => t.HPaymentDate!.Value.Month)
+                    .Where(g => g.Key != null)
                     .Select(g => new MonthlyRevenueData
                     {
                         Month = $"{year}-{g.Key:D2}",
@@ -136,21 +148,23 @@ namespace GeeYeangSore.Areas.Admin.Controllers.DataAnalysis
                     })
                     .OrderBy(m => m.Month)
                     .ToList();
+                dataAnalysis.MonthlyRevenueData = monthlyRevenueGroups;
 
                 // 房源類型圓環圖
-                dataAnalysis.PropertyTypeCounts = _context.HProperties
+                var typeGroups = _context.HProperties
                     .Where(p => !string.IsNullOrEmpty(p.HPropertyType))
                     .GroupBy(p => p.HPropertyType)
-                    .ToDictionary(g => g.Key, g => g.Count());
-    
+                    .Where(g => !string.IsNullOrEmpty(g.Key))
+                    .Select(g => new { Type = g.Key, Count = g.Count() })
+                    .ToList();
+                dataAnalysis.PropertyTypeCounts = typeGroups.ToDictionary(g => g.Type!, g => g.Count);
+
                 return View(dataAnalysis);
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                return StatusCode(500, "系統發生錯誤");
+                return Content(ex.ToString(), "text/plain");
             }
-
         }
         [HttpGet]
         public IActionResult LoadPropertyChart(int year)
@@ -164,7 +178,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.DataAnalysis
             {
                 var model = new DataAnalysisViewModel
                 {
-                MonthlyPropertyData = _context.HProperties
+                    MonthlyPropertyData = _context.HProperties
                     .Where(p => p.HPublishedDate.HasValue && p.HPublishedDate.Value.Year == year)
                     .GroupBy(p => p.HPublishedDate.Value.Month)
                     .ToList()
@@ -176,9 +190,9 @@ namespace GeeYeangSore.Areas.Admin.Controllers.DataAnalysis
                     .OrderBy(m => m.Month)
                     .ToList(),
 
-                SelectedYear = year,
+                    SelectedYear = year,
 
-                PropertyAvailableYears = _context.HProperties
+                    PropertyAvailableYears = _context.HProperties
                     .Where(p => p.HPublishedDate.HasValue)
                     .Select(p => p.HPublishedDate.Value.Year)
                     .Distinct()
@@ -194,7 +208,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.DataAnalysis
                 return StatusCode(500, "載入房源圖表失敗");
             }
         }
-        [HttpGet] 
+        [HttpGet]
         public IActionResult LoadRevenueChart(int year)
         {
             if (!HasAnyRole("超級管理員", "系統管理員", "內容管理員"))
@@ -227,7 +241,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.DataAnalysis
                         .OrderByDescending(y => y)
                         .ToList()
                 };
-    
+
                 return PartialView("_MonthlyRevenueChart", viewModel);
             }
             catch (Exception ex)
@@ -296,7 +310,7 @@ namespace GeeYeangSore.Areas.Admin.Controllers.DataAnalysis
             var viewModel = new TenantDemandTableViewModel
             {
                 FeatureDemands = featureDemand,
-                TotalCount = totalFeatureCount, 
+                TotalCount = totalFeatureCount,
                 FavoritePropertyCount = favoritePropertyCount,
                 TotalFeatureCount = totalFeatureCount,
                 SelectedYear = year,

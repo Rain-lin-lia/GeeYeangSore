@@ -3,8 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using GeeYeangSore.Data;
 using GeeYeangSore.Models;
 using Microsoft.AspNetCore.Http;
+using GeeYeangSore.Hubs;
+using GeeYeangSore.Settings; 
 
 var builder = WebApplication.CreateBuilder(args);
+
+var backendName = Environment.GetEnvironmentVariable("BACKEND_NAME");
+var port = Environment.GetEnvironmentVariable("CUSTOM_PORT") ?? "7022";
+var vueOrigin = Environment.GetEnvironmentVariable("VUE_ORIGIN") ?? "http://localhost:5173";
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -29,22 +35,55 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "GeeYeangSore", Version = "v1" });
+    c.DocInclusionPredicate((docName, apiDesc) =>
+        apiDesc.ActionDescriptor is Microsoft.AspNetCore.Mvc.Controllers.ControllerActionDescriptor descriptor &&
+        descriptor.ControllerTypeInfo.Namespace != null &&
+        descriptor.ControllerTypeInfo.Namespace.StartsWith("GeeYeangSore.APIControllers"));
+});
 builder.Services.AddRazorPages();
-
+// 新增 CORS 政策
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowVueDevServer", policy =>
+    {
+        policy.WithOrigins(vueOrigin, "http://localhost:5178", "http://localhost:5176", "http://localhost:5175", "http://localhost:5174")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials();
+    });
+});
 // 添加 Session 服務
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
+// 添加 SignalR
+builder.Services.AddSignalR();
+
+//添加SMTP
+builder.Services.Configure<SmtpSettings>(
+builder.Configuration.GetSection("SmtpSettings"));
 
 var app = builder.Build();
+
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
 }
 else
 {
@@ -53,10 +92,13 @@ else
 }
 
 app.UseHttpsRedirection();
+// 啟用靜態檔案服務
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+// 啟用 CORS 中介軟體
+app.UseCors("AllowVueDevServer");
 // 啟用 Session 中間件
 app.UseSession();
 
@@ -78,7 +120,9 @@ app.MapControllerRoute(
     name: "nonarea",
     pattern: "{controller=Home}/{action=Index}/{id?}"
 );
-
+// 加上 SignalR Hub 路由
+app.MapHub<ChatHub>("/hub");
+app.MapControllers();
 app.MapRazorPages();
 
 app.Run();

@@ -65,6 +65,8 @@ public partial class HProperty
 
     public virtual HLandlord HLandlord { get; set; } = null!;
 
+    public virtual ICollection<HMessage> HMessages { get; set; } = new List<HMessage>();
+
     public virtual ICollection<HPropertyAudit> HPropertyAudits { get; set; } = new List<HPropertyAudit>();
 
     public virtual ICollection<HPropertyFeature> HPropertyFeatures { get; set; } = new List<HPropertyFeature>();

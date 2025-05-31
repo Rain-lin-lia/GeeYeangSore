@@ -8,17 +8,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="APIControllers\User\**" />
     <Compile Remove="wwwroot\News\**" />
     <Compile Remove="wwwroot\uploads\**" />
+    <Content Remove="APIControllers\User\**" />
     <Content Remove="wwwroot\News\**" />
     <Content Remove="wwwroot\uploads\**" />
+    <EmbeddedResource Remove="APIControllers\User\**" />
     <EmbeddedResource Remove="wwwroot\News\**" />
     <EmbeddedResource Remove="wwwroot\uploads\**" />
+    <None Remove="APIControllers\User\**" />
     <None Remove="wwwroot\News\**" />
     <None Remove="wwwroot\uploads\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Apis.Auth" Version="1.69.0" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.13" />
@@ -28,15 +33,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="10.5.7" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="APIControllers\User\" />
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
-    <Folder Include="DTO\User\" />
     <Folder Include="wwwroot\images\Property\" />
   </ItemGroup>
 

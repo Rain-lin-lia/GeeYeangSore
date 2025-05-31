@@ -47,5 +47,9 @@ public partial class HMessage
 
     public virtual HChat? HChat { get; set; }
 
+    public virtual HProperty? HProperty { get; set; }
+
+    public virtual ICollection<HReaction> HReactions { get; set; } = new List<HReaction>();
+
     public virtual ICollection<HReport> HReports { get; set; } = new List<HReport>();
 }

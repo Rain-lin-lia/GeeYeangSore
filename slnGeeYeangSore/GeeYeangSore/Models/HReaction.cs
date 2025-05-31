@@ -20,4 +20,8 @@ public partial class HReaction
     public string? HReactionType { get; set; }
 
     public DateTime? HCreatedAt { get; set; }
+
+    public virtual HMessage? HTarget { get; set; }
+
+    public virtual HTenant? HTenant { get; set; }
 }

@@ -13,18 +13,18 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">生日</label>
-                    <input type="date" class="form-control" name="HBirthday" max="@DateTime.Now.ToString("yyyy-MM-dd")" required />
+                    <input type="date" class="form-control" name="HBirthday" max="@DateTime.Now.ToString("yyyy-MM-dd")" />
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">性別</label>
-                    <select class="form-select" name="HGender" required>
+                    <select class="form-select" name="HGender">
                         <option value="true">男</option>
                         <option value="false">女</option>
                     </select>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">驗證狀態</label>
-                    <select class="form-select" name="HStatus" required>
+                    <select class="form-select" name="HStatus">
                         <option value="未驗證">未驗證</option>
                         <option value="驗證中">驗證中</option>
                         <option value="已驗證">已驗證</option>
@@ -51,7 +51,7 @@
                 </div>
                 <div class="col-md-12">
                     <label class="form-label">居住地</label>
-                    <input class="form-control" name="HAddress" required />
+                    <input class="form-control" name="HAddress" />
                 </div>
 
                 <div class="col-md-6 d-flex flex-column">

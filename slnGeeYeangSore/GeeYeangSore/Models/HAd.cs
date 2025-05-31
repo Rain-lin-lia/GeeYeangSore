@@ -41,7 +41,11 @@ public partial class HAd
 
     public DateTime? HLastUpdated { get; set; }
 
+    public int? HPlanId { get; set; }
+
     public virtual HLandlord HLandlord { get; set; } = null!;
+
+    public virtual HAdPlan? HPlan { get; set; }
 
     public virtual HProperty HProperty { get; set; } = null!;
 
